@@ -50,6 +50,10 @@ function sqlInteger(value) {
   return String(Math.trunc(Number(value)));
 }
 
+function sqlBoolean(value) {
+  return value ? "TRUE" : "FALSE";
+}
+
 function normalizeIndex(value) {
   if (value === null || value === undefined || value === "") {
     return null;
@@ -78,7 +82,7 @@ function buildStatements(filePath, data) {
   const statements = [];
 
   statements.push(
-    `INSERT OR REPLACE INTO sessions (
+    `INSERT INTO sessions (
       id,
       participant_name,
       participant_email,
@@ -106,7 +110,20 @@ function buildStatements(filePath, data) {
       ${sqlString(startedAt)},
       ${sqlString(completedAt)},
       ${sqlString(data.userAgent || "")}
-    );`
+    )
+    ON CONFLICT (id) DO UPDATE SET
+      participant_name = EXCLUDED.participant_name,
+      participant_email = EXCLUDED.participant_email,
+      age_group = EXCLUDED.age_group,
+      gender = EXCLUDED.gender,
+      audio_expertise = EXCLUDED.audio_expertise,
+      driving_experience = EXCLUDED.driving_experience,
+      status = EXCLUDED.status,
+      total_main_trials = EXCLUDED.total_main_trials,
+      total_warmup_trials = EXCLUDED.total_warmup_trials,
+      started_at = EXCLUDED.started_at,
+      completed_at = EXCLUDED.completed_at,
+      user_agent = EXCLUDED.user_agent;`
   );
 
   for (const item of results) {
@@ -120,7 +137,7 @@ function buildStatements(filePath, data) {
     const selectedType = item.selectedType || (selectedOption === "A" ? item.aType : item.bType) || "";
 
     statements.push(
-      `INSERT OR REPLACE INTO assignments (
+      `INSERT INTO assignments (
         session_id,
         phase,
         trial_index,
@@ -142,13 +159,22 @@ function buildStatements(filePath, data) {
         ${sqlString(item.sampleB || "")},
         ${sqlString(item.aType || "")},
         ${sqlString(item.bType || "")},
-        0,
+        ${sqlBoolean(false)},
         ${sqlString(timestamp)}
-      );`
+      )
+      ON CONFLICT (session_id, phase, trial_index) DO UPDATE SET
+        position = EXCLUDED.position,
+        reference_path = EXCLUDED.reference_path,
+        sample_a_path = EXCLUDED.sample_a_path,
+        sample_b_path = EXCLUDED.sample_b_path,
+        sample_a_type = EXCLUDED.sample_a_type,
+        sample_b_type = EXCLUDED.sample_b_type,
+        is_warmup = EXCLUDED.is_warmup,
+        created_at = EXCLUDED.created_at;`
     );
 
     statements.push(
-      `INSERT OR REPLACE INTO responses (
+      `INSERT INTO responses (
         session_id,
         phase,
         trial_index,
@@ -173,10 +199,21 @@ function buildStatements(filePath, data) {
         ${sqlString(item.sampleB || "")},
         ${sqlString(item.aType || "")},
         ${sqlString(item.bType || "")},
-        0,
+        ${sqlBoolean(false)},
         NULL,
         ${sqlString(timestamp)}
-      );`
+      )
+      ON CONFLICT (session_id, phase, trial_index) DO UPDATE SET
+        selected_option = EXCLUDED.selected_option,
+        selected_type = EXCLUDED.selected_type,
+        reference_path = EXCLUDED.reference_path,
+        sample_a_path = EXCLUDED.sample_a_path,
+        sample_b_path = EXCLUDED.sample_b_path,
+        sample_a_type = EXCLUDED.sample_a_type,
+        sample_b_type = EXCLUDED.sample_b_type,
+        is_warmup = EXCLUDED.is_warmup,
+        response_time_ms = EXCLUDED.response_time_ms,
+        created_at = EXCLUDED.created_at;`
     );
   }
 

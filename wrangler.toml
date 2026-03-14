@@ -1,8 +1,0 @@
-name = "ddsp-carsound-eval"
-compatibility_date = "2026-03-14"
-pages_build_output_dir = "./public"
-
-[[d1_databases]]
-binding = "DB"
-database_name = "ddsp-carsound-eval"
-database_id = "adda9e69-7359-4b82-8fdf-10354ff8d88d"

@@ -3,9 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
-    "dev": "wrangler pages dev public",
-    "deploy": "wrangler pages deploy public --project-name ddsp-carsound-eval",
+    "dev": "npx vercel dev",
     "legacy:sql": "node ./scripts/export_legacy_results_sql.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.56.0"
   }
 }

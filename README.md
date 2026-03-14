@@ -1,13 +1,13 @@
-# DDSP Car Sound Evaluation on Cloudflare Pages
+# DDSP Car Sound Evaluation on Vercel + Supabase
 
-This folder contains a Cloudflare Pages + Pages Functions + D1 deployment target for the listening test.
+This folder contains a Vercel + Supabase deployment target for the listening test.
 
 ## Project settings
 
-- Pages project name: `ddsp-carsound-eval`
-- Suggested Pages URL: `https://ddsp-carsound-eval.pages.dev`
+- Vercel project name: `ddsp-carsound-eval`
+- Suggested Vercel URL: `https://ddsp-carsound-eval.vercel.app`
 - Branch: `main`
-- D1 database id: `adda9e69-7359-4b82-8fdf-10354ff8d88d`
+- Supabase project: create a new project and keep the project URL and service-role key.
 
 ## 1. Put this folder into the GitHub repo
 
@@ -28,39 +28,41 @@ ddsp-carsound-eval/
   scripts/
 ```
 
-## 2. Create the Pages project
+## 2. Create the Supabase project
 
-In Cloudflare Dashboard:
+In the Supabase dashboard:
 
-1. Open `Workers & Pages`
-2. Click `Create application`
-3. Choose `Pages`
-4. Choose `Connect to Git`
-5. Select `dabinkim0/ddsp-carsound-eval`
-6. Set `Production branch` to `main`
+1. Create a new project
+2. Choose the project name `ddsp-carsound-eval`
+3. Choose a region close to your expected participants
+4. Wait for the database to finish provisioning
+5. Open `SQL Editor`
+6. Run the SQL in `migrations/0001_init.sql`
 
-Configure the Pages project with these values:
+After the project is ready, collect:
 
-- Project name: `ddsp-carsound-eval`
-- Root directory: `/` if this folder is at the repo root, otherwise `ddsp-carsound-eval`
-- Build command: leave empty
-- Build output directory: `public`
+- `Project URL` from `Settings > API`
+- `service_role` key from `Settings > API`
 
-## 3. Add the D1 binding
+## 3. Create the Vercel project
 
-In Pages project settings:
+In the Vercel dashboard:
 
-1. Open `Settings`
-2. Open `Bindings`
-3. Add a new `D1 database binding`
-4. Binding name: `DB`
-5. Select the existing database with id `adda9e69-7359-4b82-8fdf-10354ff8d88d`
+1. Click `Add New... > Project`
+2. Import the repo `dabinkim0/ddsp-carsound-eval`
+3. Keep the root directory as `/`
+4. Framework preset: `Other`
+5. Build command: leave empty
+6. Output directory: leave empty
+7. Install command: `npm install`
 
-## 4. Add required environment variables
+## 4. Add required environment variables to Vercel
 
-Set the following secret in Cloudflare Pages:
+Add these environment variables in `Project Settings > Environment Variables`:
 
-- `ADMIN_TOKEN`: token used by `admin.html`
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `ADMIN_TOKEN`
 
 You can generate one locally with:
 
@@ -68,60 +70,33 @@ You can generate one locally with:
 openssl rand -hex 32
 ```
 
-Add it in:
-
-- `Settings > Variables and Secrets > Add variable`
-- Type: `Secret`
-- Name: `ADMIN_TOKEN`
-
-## 5. Run the database migration
-
-Run the schema migration against the remote D1 database before opening the site:
-
-```bash
-cd ddsp-carsound-eval
-npx wrangler d1 execute ddsp-carsound-eval --remote --file=./migrations/0001_init.sql
-```
-
-If you prefer using the known database id instead of the database name:
-
-```bash
-cd ddsp-carsound-eval
-npx wrangler d1 execute adda9e69-7359-4b82-8fdf-10354ff8d88d --remote --file=./migrations/0001_init.sql
-```
-
-## 6. Optional: import legacy JSON results into D1
+## 5. Optional: import legacy JSON results into Supabase
 
 If you want the existing `CarSound_exps/Subjective Eval/results/result_*.json` files to appear in the admin dashboard:
 
 ```bash
 cd ddsp-carsound-eval
 npm run legacy:sql
-npx wrangler d1 execute ddsp-carsound-eval --remote --file=./legacy_results_import.sql
 ```
+
+Then open the generated `legacy_results_import.sql` and run it in the Supabase SQL Editor.
 
 This script reads the legacy JSON files and creates:
 
-- one `session` row per JSON file
-- one `assignment` row per answered trial
-- one `response` row per answered trial
+- one `sessions` row per JSON file
+- one `assignments` row per answered trial
+- one `responses` row per answered trial
 
-## 7. Deploy
+## 6. Deploy
 
-After pushing to GitHub, Cloudflare Pages will deploy automatically from `main`.
+After the environment variables are saved, trigger a Vercel redeploy from the dashboard.
 
-You can also deploy manually:
-
-```bash
-cd ddsp-carsound-eval
-npx wrangler pages deploy public --project-name ddsp-carsound-eval
-```
-
-## 8. Local development
+## 7. Local development
 
 ```bash
 cd ddsp-carsound-eval
-npx wrangler pages dev public
+cp .env.example .env.local
+vercel dev
 ```
 
 ## Public routes
@@ -136,7 +111,8 @@ npx wrangler pages dev public
 
 ## Notes
 
-- Name and email are stored in D1 along with each participant session.
+- Name and email are stored in Supabase along with each participant session.
 - Warm-up responses are stored, but admin preference statistics are calculated from main trials only.
 - Audio assets are served from `public/samples` and `public/samples_warmup`.
-- `admin.html` expects the `ADMIN_TOKEN` secret and stores the entered token in browser local storage.
+- `admin.html` expects the `ADMIN_TOKEN` environment variable and stores the entered token in browser local storage.
+- The server uses the Supabase `service_role` key, so keep `SUPABASE_SERVICE_ROLE_KEY` only in Vercel server-side environment variables.
