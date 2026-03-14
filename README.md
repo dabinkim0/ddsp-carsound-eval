@@ -1,4 +1,4 @@
-# DDSP Car Sound Evaluation on Vercel + Supabase
+# DDSP Car Sound Evaluation
 
 This folder contains a Vercel + Supabase deployment target for the listening test.
 
