@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DDSP Car Sound Admin</title>
+    <link rel="stylesheet" href="/assets/styles.css">
+  </head>
+  <body class="app-shell">
+    <main class="site-wrap">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Admin dashboard</p>
+          <h1>Real-time evaluation statistics</h1>
+          <p class="hero-copy">
+            Review session completion, response volume, participant breakdowns, and per-trial preference trends.
+          </p>
+        </div>
+        <div class="hero-meta">
+          <span>Protected by token</span>
+          <span>Auto-refresh every 30s</span>
+        </div>
+      </section>
+
+      <section class="panel panel-wide">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">Authentication</p>
+            <h2>Admin access</h2>
+          </div>
+          <button id="clear-token-btn" class="button button-secondary" type="button">Clear token</button>
+        </div>
+        <div class="inline-form">
+          <input id="admin-token" type="password" placeholder="Paste ADMIN_TOKEN">
+          <button id="load-dashboard-btn" class="button button-primary" type="button">Load dashboard</button>
+        </div>
+        <p id="admin-status" class="message muted">Enter the token configured in Cloudflare Pages.</p>
+      </section>
+
+      <section id="admin-dashboard" class="hidden">
+        <section class="metric-grid">
+          <article class="metric-card">
+            <p>Sessions started</p>
+            <strong id="metric-started">0</strong>
+          </article>
+          <article class="metric-card">
+            <p>Sessions completed</p>
+            <strong id="metric-completed">0</strong>
+          </article>
+          <article class="metric-card">
+            <p>Completion rate</p>
+            <strong id="metric-completion-rate">0%</strong>
+          </article>
+          <article class="metric-card">
+            <p>Proposed selection rate</p>
+            <strong id="metric-proposed-rate">0%</strong>
+          </article>
+          <article class="metric-card">
+            <p>Main responses</p>
+            <strong id="metric-main-responses">0</strong>
+          </article>
+          <article class="metric-card">
+            <p>Started in last 24h</p>
+            <strong id="metric-last-24h">0</strong>
+          </article>
+        </section>
+
+        <section class="dashboard-grid">
+          <article class="panel">
+            <div class="section-head">
+              <div>
+                <p class="section-kicker">Preference</p>
+                <h2>Overall selection</h2>
+              </div>
+            </div>
+            <div class="stack-bar">
+              <div id="baseline-bar" class="stack-bar-baseline">Baseline</div>
+              <div id="proposed-bar" class="stack-bar-proposed">Proposed</div>
+            </div>
+            <div class="legend-row">
+              <span id="baseline-label">Baseline 0</span>
+              <span id="proposed-label">Proposed 0</span>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="section-head">
+              <div>
+                <p class="section-kicker">Participants</p>
+                <h2>Demographics</h2>
+              </div>
+            </div>
+            <div class="demographic-columns">
+              <div>
+                <h3>Age</h3>
+                <ul id="age-groups" class="stat-list"></ul>
+              </div>
+              <div>
+                <h3>Gender</h3>
+                <ul id="genders" class="stat-list"></ul>
+              </div>
+              <div>
+                <h3>Audio</h3>
+                <ul id="audio-expertise" class="stat-list"></ul>
+              </div>
+              <div>
+                <h3>Driving</h3>
+                <ul id="driving-experience" class="stat-list"></ul>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <p class="section-kicker">Recent activity</p>
+              <h2>Latest sessions</h2>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Status</th>
+                  <th>Main responses</th>
+                  <th>Started</th>
+                  <th>Completed</th>
+                </tr>
+              </thead>
+              <tbody id="recent-sessions"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <p class="section-kicker">Trial detail</p>
+              <h2>Per-trial preference</h2>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Trial</th>
+                  <th>Total responses</th>
+                  <th>Proposed</th>
+                  <th>Baseline</th>
+                  <th>Proposed rate</th>
+                  <th>Avg response time</th>
+                </tr>
+              </thead>
+              <tbody id="trial-stats"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script type="module" src="/assets/admin.js"></script>
+  </body>
+  </html>

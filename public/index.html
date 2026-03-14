@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DDSP Car Sound Evaluation</title>
+    <link rel="stylesheet" href="/assets/styles.css">
+  </head>
+  <body class="app-shell">
+    <main class="site-wrap">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">MAC Lab, KAIST</p>
+          <h1>DDSP Car Sound Listening Evaluation</h1>
+          <p class="hero-copy">
+            Compare two synthesized samples against a ground-truth reference and
+            choose the one that sounds more similar.
+          </p>
+        </div>
+        <div class="hero-meta">
+          <span>50 main trials</span>
+          <span>3 warm-up trials</span>
+          <span>Cloud-saved responses</span>
+        </div>
+      </section>
+
+      <section id="form-screen" class="panel panel-wide">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">Participant</p>
+            <h2>Start evaluation</h2>
+          </div>
+          <p class="muted">Name and email will be stored with your responses.</p>
+        </div>
+
+        <form id="participant-form" class="form-grid">
+          <label class="field">
+            <span>Name</span>
+            <input id="name" name="name" type="text" placeholder="Your name" required>
+          </label>
+          <label class="field">
+            <span>Email</span>
+            <input id="email" name="email" type="email" placeholder="name@example.com" required>
+          </label>
+
+          <label class="field">
+            <span>Age group</span>
+            <select id="age" name="age" required>
+              <option value="" selected disabled>Choose...</option>
+              <option value="10s">10s</option>
+              <option value="20s">20s</option>
+              <option value="30s">30s</option>
+              <option value="40s">40s</option>
+              <option value="50+">50+</option>
+            </select>
+          </label>
+
+          <fieldset class="field">
+            <legend>Gender</legend>
+            <div class="radio-row">
+              <label><input type="radio" name="gender" value="Male" required> Male</label>
+              <label><input type="radio" name="gender" value="Female"> Female</label>
+              <label><input type="radio" name="gender" value="Prefer not to say"> Prefer not to say</label>
+            </div>
+          </fieldset>
+
+          <fieldset class="field">
+            <legend>Audio expertise</legend>
+            <div class="radio-row">
+              <label><input type="radio" name="audio_expertise" value="High" required> High</label>
+              <label><input type="radio" name="audio_expertise" value="Medium"> Medium</label>
+              <label><input type="radio" name="audio_expertise" value="Low"> Low</label>
+            </div>
+          </fieldset>
+
+          <fieldset class="field">
+            <legend>Driving experience</legend>
+            <div class="radio-row">
+              <label><input type="radio" name="driving_experience" value="High" required> High</label>
+              <label><input type="radio" name="driving_experience" value="Medium"> Medium</label>
+              <label><input type="radio" name="driving_experience" value="Low"> Low</label>
+            </div>
+          </fieldset>
+
+          <div class="actions">
+            <button id="start-btn" class="button button-primary" type="submit">Start evaluation</button>
+          </div>
+          <p id="form-error" class="message error hidden"></p>
+        </form>
+      </section>
+
+      <section id="test-screen" class="panel hidden">
+        <div class="progress-row">
+          <div>
+            <p class="section-kicker" id="phase-label">Warm-up</p>
+            <h2 id="progress">Warm-up 1 of 3</h2>
+          </div>
+          <div class="status-badge" id="question">Which sample is closer to the reference?</div>
+        </div>
+
+        <div class="audio-grid">
+          <article class="audio-card audio-card-featured">
+            <p class="audio-title">Reference</p>
+            <audio id="audio-ref" controls preload="none"></audio>
+          </article>
+          <article class="audio-card">
+            <p class="audio-title">Sample A</p>
+            <audio id="audio-a" controls preload="none"></audio>
+          </article>
+          <article class="audio-card">
+            <p class="audio-title">Sample B</p>
+            <audio id="audio-b" controls preload="none"></audio>
+          </article>
+        </div>
+
+        <div class="choice-row">
+          <button id="btn-a" class="button button-choice" type="button">Choose sample A</button>
+          <button id="btn-b" class="button button-choice button-choice-alt" type="button">Choose sample B</button>
+        </div>
+        <p class="muted">Please listen to the clips before responding. The next trial loads automatically after each choice.</p>
+      </section>
+
+      <section id="warmup-end-screen" class="panel hidden">
+        <p class="section-kicker">Warm-up completed</p>
+        <h2>Main evaluation starts now</h2>
+        <p class="muted">
+          You have completed the practice section. The full evaluation contains 50 main trials.
+        </p>
+        <button id="warmup-proceed-btn" class="button button-primary" type="button">Start main evaluation</button>
+      </section>
+
+      <section id="thankyou-screen" class="panel hidden">
+        <p class="section-kicker">Done</p>
+        <h2>Thank you for participating.</h2>
+        <p id="submit-status" class="message">Submitting results...</p>
+      </section>
+    </main>
+
+    <div id="instructions-overlay" class="overlay hidden" aria-hidden="true">
+      <div class="overlay-card">
+        <div id="instructions-content"></div>
+      </div>
+    </div>
+
+    <script type="module" src="/assets/app.js"></script>
+  </body>
+  </html>

@@ -1,0 +1,11 @@
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: same-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+/samples/*
+  Cache-Control: public, max-age=86400
+
+/samples_warmup/*
+  Cache-Control: public, max-age=86400

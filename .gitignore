@@ -1,0 +1,4 @@
+node_modules/
+.wrangler/
+.DS_Store
+legacy_results_import.sql

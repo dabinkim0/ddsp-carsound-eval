@@ -1,0 +1,47 @@
+<style>
+  .abx-intro h2 { text-align: center; }
+  .abx-intro { font-size: 15px; line-height: 1.5; }
+  .abx-intro .lang-block { background: #fafafa; border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px 14px; }
+  .abx-intro .lang-block ul { margin: 0.4rem 0; padding-left: 18px; list-style: disc; }
+  .abx-intro .lang-block li { margin: 0.3rem 0; }
+  #abx-intro-start { display: block; margin: 14px auto 0; }
+  /* Desktop */
+  @media (min-width: 640px) {
+    .abx-intro .lang-block { float: center; width: calc(97.5% - 12px); margin: 0; }
+    .abx-intro .lang-block.en { margin-right: 24px; }
+    .abx-intro::after { content: ""; display: table; clear: both; }
+    .abx-intro hr { display: none; }
+  }
+</style>
+
+<div class="abx-intro">
+  <h2>ABX Similarity Listening Test — Quick Guide</h2>
+
+  <div class="lang-block en">
+    <ul>
+      <li>First listen to the reference, then <strong>A</strong> and <strong>B</strong>; choose the sample that is <strong>more similar to the reference</strong>.</li>
+      <li>Focus on engine harmonics; low-frequency energy; transient noises from gear shifts and fuel combustion; and sustained noise from road contact and wind.</li>
+    </ul>
+    <ul>
+      <li><strong>Note A:</strong> Choose the sample more similar to the reference—not simply the “cleaner” or less-noisy one.</li>
+      <li><strong>Note B:</strong> Please listen to each sample to the end before answering.</li>
+      <li><strong>Note C:</strong> Use the fixed playback chain (MOTU M2, HD650). Set the volume once at the start and do not adjust it.</li>
+    </ul>
+  </div>
+
+  <hr/>
+
+  <div class="lang-block ko">
+    <ul>
+      <li>레퍼런스 샘플을 먼저 듣고 <strong>A</strong>와 <strong>B</strong>를 청취한 뒤, <strong>레퍼런스와 더 유사한 샘플</strong>을 선택하세요.</li>
+      <li>엔진의 배음, 저역대 에너지, 기어 변속·연료 연소 등으로 발생하는 순간적인 소음, 노면 접촉과 바람으로 발생하는 지속적인 소음 등에 집중하여 들어주세요.</li>
+    </ul>
+    <ul>
+      <li><strong>주의사항 A:</strong> 소음이 적고 깔끔하게 들리는 소리가 아닌, 레퍼런스와 유사한 소리를 선택해주세요.</li>
+      <li><strong>주의사항 B:</strong> 각 샘플을 끝까지 듣고 응답해 주세요.</li>
+      <li><strong>주의사항 C:</strong> 고정된 재생 환경(MOTU M2, HD650)을 사용하고, 초기에 볼륨을 한 번 설정한 뒤 수정하지 마세요.</li>
+    </ul>
+  </div>
+  
+  <button id="abx-intro-start">Start</button>
+</div>

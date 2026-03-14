@@ -1,0 +1,11 @@
+{
+  "name": "ddsp-carsound-eval",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler pages dev public",
+    "deploy": "wrangler pages deploy public --project-name ddsp-carsound-eval",
+    "legacy:sql": "node ./scripts/export_legacy_results_sql.mjs"
+  }
+}
