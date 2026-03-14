@@ -11,14 +11,14 @@ This folder contains a Cloudflare Pages + Pages Functions + D1 deployment target
 
 ## 1. Put this folder into the GitHub repo
 
-Your GitHub repository is `https://github.com/dabinkim0/ddsp_carsound_eval.git`.
+Your GitHub repository is `https://github.com/dabinkim0/ddsp-carsound-eval.git`.
 
 The repository should contain the contents of this folder at the root, or this folder should be uploaded as the Pages root directory.
 
 Recommended repository layout:
 
 ```text
-ddsp_carsound_eval/
+ddsp-carsound-eval/
   README.md
   package.json
   wrangler.toml
@@ -36,7 +36,7 @@ In Cloudflare Dashboard:
 2. Click `Create application`
 3. Choose `Pages`
 4. Choose `Connect to Git`
-5. Select `dabinkim0/ddsp_carsound_eval`
+5. Select `dabinkim0/ddsp-carsound-eval`
 6. Set `Production branch` to `main`
 
 Configure the Pages project with these values:
