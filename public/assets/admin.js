@@ -150,7 +150,7 @@ function renderTrials(payload) {
             <tr>
               <td>${trial.stageTitle}</td>
               <td>${trial.itemTitle}</td>
-              <td>${trial.candidateLabel}</td>
+              <td>${trial.candidateId}</td>
               <td>${trial.totalRatings}</td>
               <td>${formatScore(trial.averageScore)}</td>
               <td>${trial.hasAudio ? "Yes" : "No"}</td>

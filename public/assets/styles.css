@@ -126,6 +126,8 @@ button {
   border: 1px solid rgba(13, 111, 99, 0.18);
   color: var(--accent-strong);
   font-weight: 500;
+  max-width: 100%;
+  white-space: normal;
 }
 
 .panel {
@@ -185,7 +187,7 @@ button {
   gap: 8px;
   align-items: center;
   font-weight: 400;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .actions,
@@ -306,6 +308,7 @@ audio {
   justify-content: space-between;
   gap: 16px;
   align-items: flex-start;
+  flex-wrap: wrap;
 }
 
 .slider-value {
@@ -388,7 +391,7 @@ audio {
 .audio-shell-time {
   color: var(--muted);
   font-size: 0.84rem;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .audio-shell-disabled {
@@ -525,5 +528,91 @@ audio {
   .section-head,
   .progress-row {
     flex-direction: column;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-shell {
+    padding: 18px 10px 28px;
+  }
+
+  .hero {
+    padding: 20px 18px;
+    border-radius: 20px;
+  }
+
+  .panel,
+  .panel-wide,
+  .overlay-card {
+    padding: 18px;
+    border-radius: 18px;
+  }
+
+  .field,
+  .audio-card,
+  .metric-card,
+  .audio-placeholder {
+    padding: 14px;
+    border-radius: 16px;
+  }
+
+  h1 {
+    font-size: 1.75rem;
+    line-height: 1.08;
+  }
+
+  h2 {
+    font-size: 1.3rem;
+  }
+
+  .radio-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .section-head,
+  .progress-row,
+  .inline-form,
+  .actions,
+  .choice-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .button,
+  .inline-form input {
+    width: 100%;
+  }
+
+  .status-badge {
+    display: block;
+    width: 100%;
+    border-radius: 16px;
+  }
+
+  .candidate-card-head {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .slider-value {
+    align-self: flex-start;
+  }
+
+  .audio-shell-controls {
+    grid-template-columns: auto 1fr;
+    row-gap: 8px;
+  }
+
+  .audio-shell-time {
+    grid-column: 1 / -1;
+  }
+
+  .stat-list li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
   }
 }

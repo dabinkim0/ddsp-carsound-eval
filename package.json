@@ -7,7 +7,8 @@
     "node": "22.x"
   },
   "scripts": {
-    "dev": "npx vercel dev"
+    "dev": "npx vercel dev",
+    "sync:aes-audio": "python3 ./scripts/sync_aes_selected_audio.py"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.56.0"

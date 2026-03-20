@@ -23,8 +23,7 @@ export default async function handler(req, res) {
       stageTitle: row.stage_title,
       itemId: row.item_id,
       itemTitle: row.item_title,
-      candidateSlot: row.candidate_slot,
-      candidateLabel: row.candidate_label,
+      candidateId: row.candidate_id || row.candidate_label || String(row.candidate_slot ?? ""),
       totalRatings: row.total_ratings,
       averageScore: row.average_score,
       hasAudio: row.has_audio

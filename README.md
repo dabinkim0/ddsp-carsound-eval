@@ -2,38 +2,32 @@
 
 This app runs a two-stage listening test on Vercel + Supabase.
 
-- Stage 1: Comparative Study on the Application of Engine Order
-- Stage 2: Comparative Study on the Model Architecture
-- Stage 1: 12 items, 4 shuffled candidates per item plus Ground Truth
-- Stage 2: 12 items, 6 shuffled candidates per item plus Ground Truth
-- Rating method: 0 to 100 MUSHRA-style sliders
+- Stage 1: Application of Engine Order
+- Stage 2: Model Architecture
+- Stage 1: 16 fixed items, 5 shuffled candidates per item plus Ground Truth
+- Stage 2: 16 fixed items, 7 shuffled candidates per item plus Ground Truth
+- Rating method: 0 to 100 sliders
 - Ground Truth is shown at the top of every item
 - Candidate order is shuffled per session so participants cannot identify the method directly
-- Audio playback is currently disabled by config until the final files are placed in the template directory
+- The underlying source items are fixed across all participants
 
 ## Current config
 
-The current stage template is defined in:
+The fixed stage setup is defined in:
 
 - [`lib/evaluation-config.js`](/Users/dabinkim/Desktop/Research%20Projects/2026_DDSPCarSound/ddsp-carsound-eval/lib/evaluation-config.js)
 
 Important defaults:
 
-- `ITEMS_PER_STAGE = 12`
-- `ENABLE_AUDIO_PLAYBACK = false`
-- `ENABLE_LEGACY_PREVIEW_AUDIO = true`
-- `AUDIO_ROOT = "/samples/mushra"`
+- Fixed source item IDs: `035, 179, 178, 010, 009, 057, 080, 074, 050, 068, 031, 089, 039, 172, 102, 132`
+- `AUDIO_ROOT = "/samples/aes-selected"`
 
 Current candidate IDs:
 
-- Stage 1: `A_01`, `A_02`, `B_01`, `B_02`
-- Stage 2: `A_sig_01`, `A_sig_02`, `A_sig_03`, `B_sig_01`, `B_sig_02`, `B_sig_03`
+- Stage 1: `reference_test`, `c2_direct`, `c1_direct`, `c2_encoder`, `c1_encoder`
+- Stage 2: `reference_test`, `c1_direct_rpm`, `c1_encoder_rpm`, `c1_direct_rpm_pedal_gear`, `c1_encoder_rpm_pedal_gear`, `c1_direct_full`, `c1_encoder_full`
 
-Current preview state:
-
-- Stage 1 item 1-2 use legacy preview audio from `public/samples/16kHz`
-- Stage 2 item 1-2 use legacy preview audio from `public/samples/16kHz`
-- The remaining items still render with disabled placeholder players until the final MUSHRA assets are added
+The current item set was sampled once from the shared TestA/TestB `processed/selected/16kHz` pool and is now fixed for every participant.
 
 ## Vercel + Supabase setup
 
@@ -59,7 +53,9 @@ If this project already used the older AB-style schema, run:
 
 - [`migrations/0002_stage_mushra.sql`](/Users/dabinkim/Desktop/Research%20Projects/2026_DDSPCarSound/ddsp-carsound-eval/migrations/0002_stage_mushra.sql)
 
-`0002_stage_mushra.sql` drops the old AB response tables and recreates the score-based Stage 1 / Stage 2 schema.
+If this project already uses the stage-based schema and you only need the corrected admin aggregation, run:
+
+- [`migrations/0003_group_admin_stats_by_candidate.sql`](/Users/dabinkim/Desktop/Research%20Projects/2026_DDSPCarSound/ddsp-carsound-eval/migrations/0003_group_admin_stats_by_candidate.sql)
 
 After Supabase is ready, copy:
 
@@ -107,30 +103,21 @@ cp .env.example .env.local
 npx vercel dev
 ```
 
-## 5. Audio file template
+## 5. Audio sync
 
-The app now uses a fixed directory and filename convention.
+The deployed app serves a fixed 16-item subset copied from `AES_ListeningTestset_v0`.
 
-- Root: [`public/samples/mushra`](/Users/dabinkim/Desktop/Research%20Projects/2026_DDSPCarSound/ddsp-carsound-eval/public/samples/mushra)
-- Full example tree: [`public/samples/mushra/README.md`](/Users/dabinkim/Desktop/Research%20Projects/2026_DDSPCarSound/ddsp-carsound-eval/public/samples/mushra/README.md)
+- Source dataset root: [`/Users/dabinkim/Desktop/Research Projects/2026_DDSPCarSound/AES_ListeningTestset_v0`](/Users/dabinkim/Desktop/Research%20Projects/2026_DDSPCarSound/AES_ListeningTestset_v0)
+- Target asset root: [`public/samples/aes-selected`](/Users/dabinkim/Desktop/Research%20Projects/2026_DDSPCarSound/ddsp-carsound-eval/public/samples/aes-selected)
+- Sync script: [`scripts/sync_aes_selected_audio.py`](/Users/dabinkim/Desktop/Research%20Projects/2026_DDSPCarSound/ddsp-carsound-eval/scripts/sync_aes_selected_audio.py)
+- Layout reference: [`public/samples/aes-selected/README.md`](/Users/dabinkim/Desktop/Research%20Projects/2026_DDSPCarSound/ddsp-carsound-eval/public/samples/aes-selected/README.md)
 
-Expected pattern:
+To refresh the copied audio from the dataset:
 
-- Stage 1 Ground Truth: `/public/samples/mushra/stage1/item01/ground_truth.wav`
-- Stage 1 candidate: `/public/samples/mushra/stage1/item01/A_01.wav`
-- Stage 2 candidate: `/public/samples/mushra/stage2/item01/A_sig_03.wav`
-
-The config generates paths automatically from this template for all 12 items in each stage.
-
-## 6. Turn audio playback on
-
-When the real files are ready:
-
-1. Put the files into the template directory tree above.
-2. Set `ENABLE_AUDIO_PLAYBACK = true` in [`lib/evaluation-config.js`](/Users/dabinkim/Desktop/Research%20Projects/2026_DDSPCarSound/ddsp-carsound-eval/lib/evaluation-config.js).
-3. Commit and push to `main`.
-
-Until then, the UI renders the full test but shows audio placeholders instead of players.
+```bash
+cd ddsp-carsound-eval
+npm run sync:aes-audio
+```
 
 ## Routes
 
@@ -145,6 +132,6 @@ Until then, the UI renders the full test but shows audio placeholders instead of
 ## Notes
 
 - Participant name and email are stored in Supabase.
-- The current repository no longer includes the old AB-style JSON import path because the data schema changed to stage-based MUSHRA ratings.
+- The admin per-item table is aggregated by `candidate_id`, not shuffled slot number.
 - `admin.html` expects `ADMIN_TOKEN` and stores the entered token in browser local storage.
 - Keep `SUPABASE_SERVICE_ROLE_KEY` only in Vercel server-side environment variables.
