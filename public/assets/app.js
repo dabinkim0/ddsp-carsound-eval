@@ -74,7 +74,14 @@ function serializeParticipant() {
 function renderAudioBlock(audioDescriptor, label) {
   if (!audioDescriptor?.hasAudio || !audioDescriptor?.path) {
     return `
-      <div class="audio-placeholder">
+      <div class="audio-placeholder audio-shell audio-shell-disabled" aria-disabled="true">
+        <div class="audio-shell-controls">
+          <span class="audio-shell-button">Play</span>
+          <div class="audio-shell-track">
+            <span class="audio-shell-progress"></span>
+          </div>
+          <span class="audio-shell-time">--:-- / --:--</span>
+        </div>
         <p class="audio-placeholder-label">${label}</p>
         <p class="audio-placeholder-copy">Audio will be attached later.</p>
       </div>

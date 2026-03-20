@@ -345,6 +345,56 @@ audio {
   background: rgba(247, 240, 223, 0.45);
 }
 
+.audio-shell {
+  width: 100%;
+}
+
+.audio-shell-controls {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.audio-shell-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 58px;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(112, 103, 95, 0.14);
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.audio-shell-track {
+  position: relative;
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(112, 103, 95, 0.18);
+}
+
+.audio-shell-progress {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0;
+  background: rgba(13, 111, 99, 0.24);
+}
+
+.audio-shell-time {
+  color: var(--muted);
+  font-size: 0.84rem;
+  white-space: nowrap;
+}
+
+.audio-shell-disabled {
+  opacity: 0.92;
+}
+
 .audio-placeholder-label,
 .audio-placeholder-copy {
   margin: 0;

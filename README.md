@@ -21,12 +21,19 @@ Important defaults:
 
 - `ITEMS_PER_STAGE = 12`
 - `ENABLE_AUDIO_PLAYBACK = false`
+- `ENABLE_LEGACY_PREVIEW_AUDIO = true`
 - `AUDIO_ROOT = "/samples/mushra"`
 
 Current candidate IDs:
 
 - Stage 1: `A_01`, `A_02`, `B_01`, `B_02`
 - Stage 2: `A_sig_01`, `A_sig_02`, `A_sig_03`, `B_sig_01`, `B_sig_02`, `B_sig_03`
+
+Current preview state:
+
+- Stage 1 item 1-2 use legacy preview audio from `public/samples/16kHz`
+- Stage 2 item 1-2 use legacy preview audio from `public/samples/16kHz`
+- The remaining items still render with disabled placeholder players until the final MUSHRA assets are added
 
 ## Vercel + Supabase setup
 
