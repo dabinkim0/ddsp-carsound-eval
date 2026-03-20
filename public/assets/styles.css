@@ -187,7 +187,9 @@ button {
   gap: 8px;
   align-items: center;
   font-weight: 400;
-  white-space: normal;
+  white-space: nowrap;
+  word-break: keep-all;
+  overflow-wrap: normal;
 }
 
 .actions,
