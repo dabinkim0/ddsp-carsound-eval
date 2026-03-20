@@ -40,15 +40,25 @@ function getToken() {
   return localStorage.getItem(TOKEN_KEY) || "";
 }
 
+function encodeToken(token) {
+  const bytes = new TextEncoder().encode(token);
+  let binary = "";
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte);
+  }
+  return btoa(binary);
+}
+
 function setStatus(message, isError = false) {
   elements.status.textContent = message;
   elements.status.classList.toggle("error", isError);
 }
 
 async function loadJson(path) {
+  const token = getToken();
   const response = await fetch(path, {
     headers: {
-      authorization: `Bearer ${getToken()}`
+      "x-admin-token-b64": encodeToken(token)
     }
   });
 
