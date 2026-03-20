@@ -183,7 +183,6 @@ function renderItem() {
           <div class="candidate-card-head">
             <div>
               <p class="audio-title">${candidate.displayLabel}</p>
-              <p class="muted">Shuffled candidate ${candidate.candidateSlot}</p>
             </div>
             <div class="slider-value" id="slider-value-${candidate.candidateSlot}">50</div>
           </div>
