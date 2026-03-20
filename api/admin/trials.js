@@ -18,9 +18,21 @@ export default async function handler(req, res) {
       throw error;
     }
 
+    const trials = (data || []).map((row) => ({
+      stageKey: row.stage_key,
+      stageTitle: row.stage_title,
+      itemId: row.item_id,
+      itemTitle: row.item_title,
+      candidateSlot: row.candidate_slot,
+      candidateLabel: row.candidate_label,
+      totalRatings: row.total_ratings,
+      averageScore: row.average_score,
+      hasAudio: row.has_audio
+    }));
+
     sendJson(res, 200, {
       success: true,
-      trials: data || []
+      trials
     });
   } catch (error) {
     sendError(res, 500, "Failed to load per-trial statistics.", {

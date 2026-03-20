@@ -10,13 +10,10 @@ const elements = {
   metricStarted: document.getElementById("metric-started"),
   metricCompleted: document.getElementById("metric-completed"),
   metricCompletionRate: document.getElementById("metric-completion-rate"),
-  metricProposedRate: document.getElementById("metric-proposed-rate"),
-  metricMainResponses: document.getElementById("metric-main-responses"),
+  metricAverageScore: document.getElementById("metric-average-score"),
+  metricRatingsRecorded: document.getElementById("metric-ratings-recorded"),
   metricLast24Hours: document.getElementById("metric-last-24h"),
-  baselineBar: document.getElementById("baseline-bar"),
-  proposedBar: document.getElementById("proposed-bar"),
-  baselineLabel: document.getElementById("baseline-label"),
-  proposedLabel: document.getElementById("proposed-label"),
+  stageAverages: document.getElementById("stage-averages"),
   ageGroups: document.getElementById("age-groups"),
   genders: document.getElementById("genders"),
   audioExpertise: document.getElementById("audio-expertise"),
@@ -31,11 +28,12 @@ function formatPercent(value) {
   return `${(value * 100).toFixed(1)}%`;
 }
 
+function formatScore(value) {
+  return value === null || value === undefined ? "-" : Number(value).toFixed(1);
+}
+
 function formatDate(value) {
-  if (!value) {
-    return "-";
-  }
-  return new Date(value).toLocaleString();
+  return value ? new Date(value).toLocaleString() : "-";
 }
 
 function getToken() {
@@ -63,68 +61,98 @@ async function loadJson(path) {
 }
 
 function renderList(target, rows) {
+  if (!rows.length) {
+    target.innerHTML = '<li><span>No data yet</span><strong>-</strong></li>';
+    return;
+  }
+
   target.innerHTML = rows
     .map((row) => `<li><span>${row.label}</span><strong>${row.count}</strong></li>`)
     .join("");
 }
 
 function renderSummary(payload) {
-  const { summary, demographics, recentSessions } = payload;
+  const {
+    summary = {},
+    demographics = {},
+    recentSessions = [],
+    stageAverages = []
+  } = payload;
+  const ageGroups = demographics.ageGroups || [];
+  const genders = demographics.genders || [];
+  const audioExpertise = demographics.audioExpertise || [];
+  const drivingExperience = demographics.drivingExperience || [];
 
-  elements.metricStarted.textContent = summary.sessionsStarted;
-  elements.metricCompleted.textContent = summary.sessionsCompleted;
-  elements.metricCompletionRate.textContent = formatPercent(summary.completionRate);
-  elements.metricProposedRate.textContent = formatPercent(summary.proposedRate);
-  elements.metricMainResponses.textContent = summary.mainResponses;
-  elements.metricLast24Hours.textContent = summary.startedLast24Hours;
+  elements.metricStarted.textContent = summary.sessionsStarted ?? 0;
+  elements.metricCompleted.textContent = summary.sessionsCompleted ?? 0;
+  elements.metricCompletionRate.textContent = formatPercent(summary.completionRate ?? 0);
+  elements.metricAverageScore.textContent = formatScore(summary.averageScore);
+  elements.metricRatingsRecorded.textContent = summary.ratingsRecorded ?? 0;
+  elements.metricLast24Hours.textContent = summary.startedLast24Hours ?? 0;
 
-  const totalPreference = summary.proposedSelections + summary.baselineSelections;
-  const baselineWidth = totalPreference > 0 ? (summary.baselineSelections / totalPreference) * 100 : 50;
-  const proposedWidth = totalPreference > 0 ? (summary.proposedSelections / totalPreference) * 100 : 50;
+  elements.stageAverages.innerHTML = stageAverages.length
+    ? stageAverages
+        .map(
+          (stage) => `
+            <li>
+              <span>${stage.stageTitle}</span>
+              <strong>${formatScore(stage.averageScore)} / 100</strong>
+            </li>
+          `
+        )
+        .join("")
+    : '<li><span>No ratings yet</span><strong>-</strong></li>';
 
-  elements.baselineBar.style.width = `${baselineWidth}%`;
-  elements.proposedBar.style.width = `${proposedWidth}%`;
-  elements.baselineBar.textContent = totalPreference > 0 ? `${baselineWidth.toFixed(1)}%` : "0%";
-  elements.proposedBar.textContent = totalPreference > 0 ? `${proposedWidth.toFixed(1)}%` : "0%";
-  elements.baselineLabel.textContent = `Baseline ${summary.baselineSelections}`;
-  elements.proposedLabel.textContent = `Proposed ${summary.proposedSelections}`;
+  renderList(elements.ageGroups, ageGroups);
+  renderList(elements.genders, genders);
+  renderList(elements.audioExpertise, audioExpertise);
+  renderList(elements.drivingExperience, drivingExperience);
 
-  renderList(elements.ageGroups, demographics.ageGroups);
-  renderList(elements.genders, demographics.genders);
-  renderList(elements.audioExpertise, demographics.audioExpertise);
-  renderList(elements.drivingExperience, demographics.drivingExperience);
-
-  elements.recentSessions.innerHTML = recentSessions
-    .map(
-      (session) => `
+  elements.recentSessions.innerHTML = recentSessions.length
+    ? recentSessions
+        .map(
+          (session) => `
+            <tr>
+              <td>${session.participantName}</td>
+              <td>${session.participantEmail}</td>
+              <td>${session.status}</td>
+              <td>${session.responses}</td>
+              <td>${formatDate(session.startedAt)}</td>
+              <td>${formatDate(session.completedAt)}</td>
+            </tr>
+          `
+        )
+        .join("")
+    : `
         <tr>
-          <td>${session.participantName}</td>
-          <td>${session.participantEmail}</td>
-          <td>${session.status}</td>
-          <td>${session.responses}</td>
-          <td>${formatDate(session.startedAt)}</td>
-          <td>${formatDate(session.completedAt)}</td>
+          <td colspan="6">No sessions yet.</td>
         </tr>
-      `
-    )
-    .join("");
+      `;
 }
 
 function renderTrials(payload) {
-  elements.trialStats.innerHTML = payload.trials
-    .map(
-      (trial) => `
+  const trials = payload.trials || [];
+
+  elements.trialStats.innerHTML = trials.length
+    ? trials
+        .map(
+          (trial) => `
+            <tr>
+              <td>${trial.stageTitle}</td>
+              <td>${trial.itemTitle}</td>
+              <td>${trial.candidateLabel}</td>
+              <td>${trial.totalRatings}</td>
+              <td>${formatScore(trial.averageScore)}</td>
+              <td>${trial.hasAudio ? "Yes" : "No"}</td>
+            </tr>
+          `
+        )
+        .join("")
+    : `
         <tr>
-          <td>${trial.trialIndex}</td>
-          <td>${trial.total}</td>
-          <td>${trial.proposed}</td>
-          <td>${trial.baseline}</td>
-          <td>${formatPercent(trial.proposedRate)}</td>
-          <td>${trial.avgResponseTimeMs ? `${(trial.avgResponseTimeMs / 1000).toFixed(1)}s` : "-"}</td>
+          <td colspan="6">No ratings yet.</td>
         </tr>
-      `
-    )
-    .join("");
+      `;
 }
 
 async function refreshDashboard() {
@@ -143,6 +171,7 @@ function startRefreshLoop() {
   if (refreshHandle) {
     clearInterval(refreshHandle);
   }
+
   refreshHandle = setInterval(() => {
     refreshDashboard().catch((error) => {
       setStatus(error.message, true);

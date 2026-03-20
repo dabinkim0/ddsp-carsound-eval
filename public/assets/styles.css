@@ -255,6 +255,10 @@ button {
   gap: 18px;
 }
 
+.mushra-grid {
+  grid-template-columns: 1fr;
+}
+
 .audio-card {
   padding: 18px;
   border-radius: 20px;
@@ -265,6 +269,10 @@ button {
 .audio-card-featured {
   grid-column: 1 / -1;
   background: linear-gradient(135deg, rgba(13, 111, 99, 0.06), rgba(255, 255, 255, 0.94));
+}
+
+.mushra-ground-truth {
+  margin-bottom: 8px;
 }
 
 .audio-title {
@@ -280,6 +288,74 @@ audio {
 .dashboard-grid {
   display: grid;
   gap: 16px;
+}
+
+.candidate-list {
+  display: grid;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.candidate-card {
+  display: grid;
+  gap: 16px;
+}
+
+.candidate-card-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.slider-value {
+  min-width: 56px;
+  border-radius: 999px;
+  padding: 8px 12px;
+  background: rgba(13, 111, 99, 0.08);
+  color: var(--accent-strong);
+  text-align: center;
+}
+
+.slider-block {
+  display: grid;
+  gap: 8px;
+}
+
+.mushra-slider {
+  width: 100%;
+}
+
+.slider-scale {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.audio-placeholder {
+  display: grid;
+  gap: 6px;
+  min-height: 92px;
+  align-content: center;
+  justify-items: start;
+  border: 1px dashed var(--border);
+  border-radius: 16px;
+  padding: 18px;
+  background: rgba(247, 240, 223, 0.45);
+}
+
+.audio-placeholder-label,
+.audio-placeholder-copy {
+  margin: 0;
+}
+
+.audio-placeholder-label {
+  color: var(--text);
+}
+
+.audio-placeholder-copy {
+  color: var(--muted);
 }
 
 .metric-grid {
@@ -305,34 +381,6 @@ audio {
 
 .dashboard-grid {
   grid-template-columns: 1.2fr 1fr;
-}
-
-.stack-bar {
-  display: flex;
-  overflow: hidden;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  min-height: 44px;
-  margin-top: 8px;
-}
-
-.stack-bar-baseline,
-.stack-bar-proposed {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 12px;
-  color: #fff;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-.stack-bar-baseline {
-  background: #7b7168;
-}
-
-.stack-bar-proposed {
-  background: var(--accent);
 }
 
 .legend-row {

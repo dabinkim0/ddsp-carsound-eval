@@ -1,18 +1,8 @@
-CREATE TABLE IF NOT EXISTS public.sessions (
-  id TEXT PRIMARY KEY,
-  participant_name TEXT NOT NULL,
-  participant_email TEXT NOT NULL,
-  age_group TEXT NOT NULL,
-  gender TEXT NOT NULL,
-  audio_expertise TEXT NOT NULL,
-  driving_experience TEXT NOT NULL,
-  status TEXT NOT NULL DEFAULT 'started',
-  total_main_trials INTEGER NOT NULL,
-  total_warmup_trials INTEGER NOT NULL DEFAULT 0,
-  started_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  completed_at TIMESTAMPTZ,
-  user_agent TEXT
-);
+DROP FUNCTION IF EXISTS public.get_admin_trial_stats();
+DROP FUNCTION IF EXISTS public.get_admin_summary();
+
+DROP TABLE IF EXISTS public.responses;
+DROP TABLE IF EXISTS public.assignments;
 
 CREATE TABLE IF NOT EXISTS public.responses (
   session_id TEXT NOT NULL REFERENCES public.sessions(id) ON DELETE CASCADE,
@@ -32,8 +22,6 @@ CREATE TABLE IF NOT EXISTS public.responses (
   PRIMARY KEY (session_id, item_id, candidate_slot)
 );
 
-CREATE INDEX IF NOT EXISTS idx_sessions_status ON public.sessions(status);
-CREATE INDEX IF NOT EXISTS idx_sessions_started_at ON public.sessions(started_at DESC);
 CREATE INDEX IF NOT EXISTS idx_responses_stage ON public.responses(stage_key, item_id);
 CREATE INDEX IF NOT EXISTS idx_responses_item_position ON public.responses(item_position);
 CREATE INDEX IF NOT EXISTS idx_responses_created_at ON public.responses(created_at DESC);

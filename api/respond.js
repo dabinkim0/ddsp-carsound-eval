@@ -1,5 +1,5 @@
 import { getBody, requireMethod, sendError, sendJson, toInt } from "../lib/http.js";
-import { getSupabaseAdmin, requireMaybeSingle } from "../lib/supabase.js";
+import { getSupabaseAdmin } from "../lib/supabase.js";
 
 export default async function handler(req, res) {
   if (!requireMethod(req, res, "POST")) {
@@ -13,64 +13,51 @@ export default async function handler(req, res) {
   }
 
   const sessionId = String(body.sessionId || "").trim();
-  const phase = String(body.phase || "").trim();
-  const trialIndex = String(body.trialIndex || "").trim();
-  const selectedOption = String(body.selectedOption || "").trim().toUpperCase();
-  const responseTimeMs = toInt(body.responseTimeMs);
+  const stageKey = String(body.stageKey || "").trim();
+  const stageTitle = String(body.stageTitle || "").trim();
+  const itemId = String(body.itemId || "").trim();
+  const itemTitle = String(body.itemTitle || "").trim();
+  const itemPosition = toInt(body.itemPosition);
+  const ratings = Array.isArray(body.ratings) ? body.ratings : [];
 
-  if (!sessionId || !phase || !trialIndex || !["A", "B"].includes(selectedOption)) {
-    sendError(res, 400, "sessionId, phase, trialIndex, and selectedOption are required.");
+  if (!sessionId || !stageKey || !itemId || ratings.length === 0) {
+    sendError(res, 400, "sessionId, stageKey, itemId, and ratings are required.");
     return;
   }
 
   try {
     const supabase = getSupabaseAdmin();
-    const assignment = await requireMaybeSingle(
-      supabase
-        .from("assignments")
-        .select("*")
-        .eq("session_id", sessionId)
-        .eq("phase", phase)
-        .eq("trial_index", trialIndex)
-    );
+    const now = new Date().toISOString();
+    const responseRows = ratings.map((rating) => ({
+      session_id: sessionId,
+      stage_key: stageKey,
+      stage_title: stageTitle || stageKey,
+      item_id: itemId,
+      item_title: itemTitle || itemId,
+      item_position: itemPosition > 0 ? itemPosition : 1,
+      candidate_slot: toInt(rating.candidateSlot),
+      candidate_id: String(rating.candidateId || "").trim(),
+      candidate_label: String(rating.candidateLabel || "").trim(),
+      ground_truth_path: rating.groundTruthPath || null,
+      candidate_path: rating.candidatePath || null,
+      has_audio: Boolean(rating.hasAudio),
+      score: Math.max(0, Math.min(100, toInt(rating.score))),
+      created_at: now
+    }));
 
-    if (!assignment) {
-      sendError(res, 404, "Assignment not found for this session.");
-      return;
-    }
-
-    const selectedType = selectedOption === "A" ? assignment.sample_a_type : assignment.sample_b_type;
-    const { error } = await supabase.from("responses").upsert(
-      {
-        session_id: sessionId,
-        phase,
-        trial_index: trialIndex,
-        selected_option: selectedOption,
-        selected_type: selectedType,
-        reference_path: assignment.reference_path,
-        sample_a_path: assignment.sample_a_path,
-        sample_b_path: assignment.sample_b_path,
-        sample_a_type: assignment.sample_a_type,
-        sample_b_type: assignment.sample_b_type,
-        is_warmup: assignment.is_warmup,
-        response_time_ms: responseTimeMs > 0 ? responseTimeMs : null,
-        created_at: new Date().toISOString()
-      },
-      {
-        onConflict: "session_id,phase,trial_index"
-      }
-    );
+    const { error } = await supabase.from("responses").upsert(responseRows, {
+      onConflict: "session_id,item_id,candidate_slot"
+    });
 
     if (error) {
       throw error;
     }
 
     sendJson(res, 200, {
-      success: true,
-      selectedType
+      success: true
     });
   } catch (error) {
-    sendError(res, 500, "Failed to save the response.", {
+    sendError(res, 500, "Failed to save the stage ratings.", {
       details: error.message
     });
   }

@@ -1,16 +1,15 @@
 const state = {
   sessionId: null,
-  warmupTrials: [],
-  mainTrials: [],
-  phase: "warmup",
-  currentIndex: 0,
-  questionStartedAt: 0
+  stages: [],
+  stageIndex: 0,
+  itemIndex: 0
 };
 
 const elements = {
   formScreen: document.getElementById("form-screen"),
+  stageIntroScreen: document.getElementById("stage-intro-screen"),
   testScreen: document.getElementById("test-screen"),
-  warmupEndScreen: document.getElementById("warmup-end-screen"),
+  stageOutroScreen: document.getElementById("stage-outro-screen"),
   thankyouScreen: document.getElementById("thankyou-screen"),
   form: document.getElementById("participant-form"),
   formError: document.getElementById("form-error"),
@@ -18,22 +17,28 @@ const elements = {
   progress: document.getElementById("progress"),
   question: document.getElementById("question"),
   submitStatus: document.getElementById("submit-status"),
-  audioRef: document.getElementById("audio-ref"),
-  audioA: document.getElementById("audio-a"),
-  audioB: document.getElementById("audio-b"),
-  btnA: document.getElementById("btn-a"),
-  btnB: document.getElementById("btn-b"),
-  warmupProceed: document.getElementById("warmup-proceed-btn"),
+  candidateList: document.getElementById("candidate-list"),
+  groundTruthPlayer: document.getElementById("ground-truth-player"),
+  saveRatingsBtn: document.getElementById("save-ratings-btn"),
+  stageIntroKicker: document.getElementById("stage-intro-kicker"),
+  stageIntroTitle: document.getElementById("stage-intro-title"),
+  stageIntroBody: document.getElementById("stage-intro-body"),
+  stageIntroBtn: document.getElementById("stage-intro-btn"),
+  stageOutroKicker: document.getElementById("stage-outro-kicker"),
+  stageOutroTitle: document.getElementById("stage-outro-title"),
+  stageOutroBody: document.getElementById("stage-outro-body"),
+  stageOutroBtn: document.getElementById("stage-outro-btn"),
   overlay: document.getElementById("instructions-overlay"),
   overlayContent: document.getElementById("instructions-content")
 };
 
-function activeTrials() {
-  return state.phase === "warmup" ? state.warmupTrials : state.mainTrials;
+function currentStage() {
+  return state.stages[state.stageIndex];
 }
 
-function currentTrial() {
-  return activeTrials()[state.currentIndex];
+function currentItem() {
+  const stage = currentStage();
+  return stage ? stage.items[state.itemIndex] : null;
 }
 
 function showError(message) {
@@ -66,6 +71,21 @@ function serializeParticipant() {
   };
 }
 
+function renderAudioBlock(audioDescriptor, label) {
+  if (!audioDescriptor?.hasAudio || !audioDescriptor?.path) {
+    return `
+      <div class="audio-placeholder">
+        <p class="audio-placeholder-label">${label}</p>
+        <p class="audio-placeholder-copy">Audio will be attached later.</p>
+      </div>
+    `;
+  }
+
+  return `
+    <audio controls preload="none" src="${audioDescriptor.path}"></audio>
+  `;
+}
+
 async function loadInstructions() {
   const response = await fetch("/abx_instructions.html", { cache: "no-store" });
   const html = response.ok
@@ -73,8 +93,8 @@ async function loadInstructions() {
     : `
       <div class="abx-intro">
         <h2>Quick guide</h2>
-        <p>Please listen to the reference, then compare sample A and sample B.</p>
-        <button id="instructions-accept" class="button button-primary" type="button">Start</button>
+        <p>Listen to the Ground Truth first and then rate every candidate with its own slider.</p>
+        <button id="abx-intro-start" class="button button-primary" type="button">Start</button>
       </div>
     `;
 
@@ -82,7 +102,7 @@ async function loadInstructions() {
   let button = elements.overlayContent.querySelector("#abx-intro-start");
   if (!button) {
     button = document.createElement("button");
-    button.id = "instructions-accept";
+    button.id = "abx-intro-start";
     button.className = "button button-primary";
     button.type = "button";
     button.textContent = "Start";
@@ -105,68 +125,158 @@ async function loadInstructions() {
   });
 }
 
-function renderTrial() {
-  const trials = activeTrials();
-  const trial = currentTrial();
-
-  if (!trial || state.currentIndex >= trials.length) {
-    if (state.phase === "warmup") {
-      elements.testScreen.classList.add("hidden");
-      elements.warmupEndScreen.classList.remove("hidden");
-    } else {
-      completeSession();
-    }
+function showStageIntro() {
+  const stage = currentStage();
+  if (!stage) {
+    completeSession();
     return;
   }
 
-  elements.phaseLabel.textContent = state.phase === "warmup" ? "Warm-up" : "Main evaluation";
-  elements.progress.textContent = state.phase === "warmup"
-    ? `Warm-up ${state.currentIndex + 1} of ${trials.length}`
-    : `Trial ${state.currentIndex + 1} of ${trials.length}`;
-  elements.question.textContent = "Which sample is closer to the reference?";
-  elements.audioRef.src = trial.reference;
-  elements.audioA.src = trial.sampleA;
-  elements.audioB.src = trial.sampleB;
-  elements.btnA.disabled = false;
-  elements.btnB.disabled = false;
-  state.questionStartedAt = performance.now();
+  elements.testScreen.classList.add("hidden");
+  elements.stageOutroScreen.classList.add("hidden");
+  elements.stageIntroKicker.textContent = stage.title;
+  elements.stageIntroTitle.textContent = stage.introTitle;
+  elements.stageIntroBody.textContent = stage.introBody;
+  elements.stageIntroScreen.classList.remove("hidden");
 }
 
-async function submitChoice(selectedOption) {
-  const trial = currentTrial();
-  if (!trial) {
+function showStageOutro() {
+  const stage = currentStage();
+  if (!stage) {
+    completeSession();
     return;
   }
 
-  elements.btnA.disabled = true;
-  elements.btnB.disabled = true;
+  elements.testScreen.classList.add("hidden");
+  elements.stageIntroScreen.classList.add("hidden");
+  elements.stageOutroKicker.textContent = stage.title;
+  elements.stageOutroTitle.textContent = stage.outroTitle;
+  elements.stageOutroBody.textContent = stage.outroBody;
+  elements.stageOutroScreen.classList.remove("hidden");
+}
 
-  const responseTimeMs = Math.round(performance.now() - state.questionStartedAt);
+function renderItem() {
+  const stage = currentStage();
+  const item = currentItem();
+
+  if (!stage || !item) {
+    showStageOutro();
+    return;
+  }
+
+  elements.phaseLabel.textContent = stage.title;
+  elements.progress.textContent = `${stage.title} item ${item.position} of ${stage.items.length}`;
+  elements.question.textContent = item.prompt;
+  elements.groundTruthPlayer.innerHTML = renderAudioBlock(item.groundTruth, "Ground Truth");
+
+  elements.candidateList.innerHTML = item.candidates
+    .map(
+      (candidate) => `
+        <article class="audio-card candidate-card" data-candidate-slot="${candidate.candidateSlot}">
+          <div class="candidate-card-head">
+            <div>
+              <p class="audio-title">${candidate.displayLabel}</p>
+              <p class="muted">Shuffled candidate ${candidate.candidateSlot}</p>
+            </div>
+            <div class="slider-value" id="slider-value-${candidate.candidateSlot}">50</div>
+          </div>
+          <div class="candidate-player">
+            ${renderAudioBlock(candidate, candidate.displayLabel)}
+          </div>
+          <label class="slider-block">
+            <input
+              class="mushra-slider"
+              type="range"
+              min="0"
+              max="100"
+              step="1"
+              value="50"
+              data-candidate-id="${candidate.candidateId}"
+              data-candidate-slot="${candidate.candidateSlot}"
+              data-candidate-label="${candidate.displayLabel}"
+              data-candidate-path="${candidate.path || ""}"
+              data-has-audio="${candidate.hasAudio ? "true" : "false"}"
+            >
+            <div class="slider-scale">
+              <span>0</span>
+              <span>50</span>
+              <span>100</span>
+            </div>
+          </label>
+        </article>
+      `
+    )
+    .join("");
+
+  for (const slider of document.querySelectorAll(".mushra-slider")) {
+    slider.addEventListener("input", (event) => {
+      const target = event.currentTarget;
+      const slot = target.dataset.candidateSlot;
+      const valueNode = document.getElementById(`slider-value-${slot}`);
+      if (valueNode) {
+        valueNode.textContent = target.value;
+      }
+    });
+  }
+
+  elements.stageIntroScreen.classList.add("hidden");
+  elements.stageOutroScreen.classList.add("hidden");
+  elements.testScreen.classList.remove("hidden");
+}
+
+async function submitCurrentItem() {
+  const stage = currentStage();
+  const item = currentItem();
+  if (!stage || !item) {
+    return;
+  }
+
+  const ratings = Array.from(document.querySelectorAll(".mushra-slider")).map((slider) => ({
+    candidateSlot: Number.parseInt(slider.dataset.candidateSlot, 10),
+    candidateId: slider.dataset.candidateId,
+    candidateLabel: slider.dataset.candidateLabel,
+    candidatePath: slider.dataset.candidatePath || null,
+    groundTruthPath: item.groundTruth.path || null,
+    hasAudio: slider.dataset.hasAudio === "true",
+    score: Number.parseInt(slider.value, 10)
+  }));
+
+  elements.saveRatingsBtn.disabled = true;
 
   const response = await fetch("/api/respond", {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({
       sessionId: state.sessionId,
-      phase: state.phase,
-      trialIndex: trial.index,
-      selectedOption,
-      responseTimeMs
+      stageKey: stage.key,
+      stageTitle: stage.title,
+      itemId: item.id,
+      itemTitle: item.title,
+      itemPosition: item.position,
+      ratings
     })
   });
 
   const payload = await response.json().catch(() => null);
+  elements.saveRatingsBtn.disabled = false;
+
   if (!response.ok || !payload?.success) {
-    throw new Error(payload?.message || "Failed to save the response.");
+    throw new Error(payload?.message || "Failed to save the stage ratings.");
   }
 
-  state.currentIndex += 1;
-  renderTrial();
+  if (state.itemIndex < stage.items.length - 1) {
+    state.itemIndex += 1;
+    renderItem();
+    return;
+  }
+
+  showStageOutro();
 }
 
 async function completeSession() {
   elements.testScreen.classList.add("hidden");
-  elements.warmupEndScreen.classList.add("hidden");
+  elements.stageIntroScreen.classList.add("hidden");
+  elements.stageOutroScreen.classList.add("hidden");
   elements.thankyouScreen.classList.remove("hidden");
   elements.submitStatus.textContent = "Submitting results...";
 
@@ -203,15 +313,13 @@ async function startSession(event) {
   }
 
   state.sessionId = payload.sessionId;
-  state.warmupTrials = payload.warmupTrials || [];
-  state.mainTrials = payload.mainTrials || [];
-  state.phase = state.warmupTrials.length > 0 ? "warmup" : "main";
-  state.currentIndex = 0;
+  state.stages = payload.stages || [];
+  state.stageIndex = 0;
+  state.itemIndex = 0;
 
   elements.formScreen.classList.add("hidden");
   await loadInstructions();
-  elements.testScreen.classList.remove("hidden");
-  renderTrial();
+  showStageIntro();
 }
 
 elements.form.addEventListener("submit", (event) => {
@@ -220,22 +328,26 @@ elements.form.addEventListener("submit", (event) => {
   });
 });
 
-elements.btnA.addEventListener("click", () => {
-  submitChoice("A").catch((error) => {
+elements.saveRatingsBtn.addEventListener("click", () => {
+  submitCurrentItem().catch((error) => {
     showError(error.message);
   });
 });
 
-elements.btnB.addEventListener("click", () => {
-  submitChoice("B").catch((error) => {
-    showError(error.message);
-  });
+elements.stageIntroBtn.addEventListener("click", () => {
+  state.itemIndex = 0;
+  renderItem();
 });
 
-elements.warmupProceed.addEventListener("click", () => {
-  state.phase = "main";
-  state.currentIndex = 0;
-  elements.warmupEndScreen.classList.add("hidden");
-  elements.testScreen.classList.remove("hidden");
-  renderTrial();
+elements.stageOutroBtn.addEventListener("click", () => {
+  if (state.stageIndex < state.stages.length - 1) {
+    state.stageIndex += 1;
+    state.itemIndex = 0;
+    showStageIntro();
+    return;
+  }
+
+  completeSession().catch((error) => {
+    showError(error.message);
+  });
 });

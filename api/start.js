@@ -1,4 +1,4 @@
-import { createSessionTrials, getTrialCounts } from "../lib/trials.js";
+import { createStagePayload, getEvaluationCounts } from "../lib/evaluation-config.js";
 import { getBody, requireMethod, sendError, sendJson } from "../lib/http.js";
 import { getSupabaseAdmin } from "../lib/supabase.js";
 
@@ -47,8 +47,8 @@ export default async function handler(req, res) {
     const supabase = getSupabaseAdmin();
     const sessionId = crypto.randomUUID();
     const now = new Date().toISOString();
-    const { warmupTrials, mainTrials, clientWarmupTrials, clientMainTrials } = createSessionTrials();
-    const counts = getTrialCounts();
+    const stages = createStagePayload();
+    const counts = getEvaluationCounts();
 
     const { error: sessionError } = await supabase.from("sessions").insert({
       id: sessionId,
@@ -59,8 +59,8 @@ export default async function handler(req, res) {
       audio_expertise: String(participant.audioExpertise).trim(),
       driving_experience: String(participant.drivingExperience).trim(),
       status: "started",
-      total_main_trials: counts.main,
-      total_warmup_trials: counts.warmup,
+      total_main_trials: counts.itemCount,
+      total_warmup_trials: 0,
       started_at: now,
       user_agent: req.headers["user-agent"] || ""
     });
@@ -69,30 +69,10 @@ export default async function handler(req, res) {
       throw sessionError;
     }
 
-    const assignments = [...warmupTrials, ...mainTrials].map((trial) => ({
-      session_id: sessionId,
-      phase: trial.phase,
-      trial_index: trial.trialIndex,
-      position: trial.position,
-      reference_path: trial.referencePath,
-      sample_a_path: trial.sampleAPath,
-      sample_b_path: trial.sampleBPath,
-      sample_a_type: trial.sampleAType,
-      sample_b_type: trial.sampleBType,
-      is_warmup: trial.isWarmup,
-      created_at: now
-    }));
-
-    const { error: assignmentError } = await supabase.from("assignments").insert(assignments);
-    if (assignmentError) {
-      throw assignmentError;
-    }
-
     sendJson(res, 200, {
       success: true,
       sessionId,
-      warmupTrials: clientWarmupTrials,
-      mainTrials: clientMainTrials,
+      stages,
       counts
     });
   } catch (error) {

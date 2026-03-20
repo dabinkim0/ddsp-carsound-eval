@@ -13,14 +13,15 @@
           <p class="eyebrow">MAC Lab, KAIST</p>
           <h1>DDSP Car Sound Listening Evaluation</h1>
           <p class="hero-copy">
-            Compare two synthesized samples against a ground-truth reference and
-            choose the one that sounds more similar.
+            Stage 1 compares the application of engine order and Stage 2 compares
+            the model architecture. In each item, rate shuffled candidate samples
+            against the Ground Truth using a 0 to 100 MUSHRA-style slider.
           </p>
         </div>
         <div class="hero-meta">
-          <span>50 main trials</span>
-          <span>3 warm-up trials</span>
-          <span>Cloud-saved responses</span>
+          <span>12 items + 12 items</span>
+          <span>4 candidates + 6 candidates</span>
+          <span>Ground Truth anchored</span>
         </div>
       </section>
 
@@ -89,44 +90,42 @@
         </form>
       </section>
 
+      <section id="stage-intro-screen" class="panel hidden">
+        <p class="section-kicker" id="stage-intro-kicker">Stage 1</p>
+        <h2 id="stage-intro-title">Stage 1 begins</h2>
+        <p id="stage-intro-body" class="muted"></p>
+        <button id="stage-intro-btn" class="button button-primary" type="button">Start stage</button>
+      </section>
+
       <section id="test-screen" class="panel hidden">
         <div class="progress-row">
           <div>
-            <p class="section-kicker" id="phase-label">Warm-up</p>
-            <h2 id="progress">Warm-up 1 of 3</h2>
+            <p class="section-kicker" id="phase-label">Stage 1</p>
+            <h2 id="progress">Stage 1 item 1 of 1</h2>
           </div>
-          <div class="status-badge" id="question">Which sample is closer to the reference?</div>
+          <div class="status-badge" id="question">Rate each candidate from 0 to 100.</div>
         </div>
 
-        <div class="audio-grid">
-          <article class="audio-card audio-card-featured">
-            <p class="audio-title">Reference</p>
-            <audio id="audio-ref" controls preload="none"></audio>
-          </article>
-          <article class="audio-card">
-            <p class="audio-title">Sample A</p>
-            <audio id="audio-a" controls preload="none"></audio>
-          </article>
-          <article class="audio-card">
-            <p class="audio-title">Sample B</p>
-            <audio id="audio-b" controls preload="none"></audio>
+        <div class="audio-grid mushra-grid">
+          <article class="audio-card audio-card-featured mushra-ground-truth">
+            <p class="audio-title">Ground Truth</p>
+            <div id="ground-truth-player"></div>
           </article>
         </div>
+
+        <div id="candidate-list" class="candidate-list"></div>
 
         <div class="choice-row">
-          <button id="btn-a" class="button button-choice" type="button">Choose sample A</button>
-          <button id="btn-b" class="button button-choice button-choice-alt" type="button">Choose sample B</button>
+          <button id="save-ratings-btn" class="button button-primary" type="button">Save ratings and continue</button>
         </div>
-        <p class="muted">Please listen to the clips before responding. The next trial loads automatically after each choice.</p>
+        <p class="muted">The candidate order is randomized. Use the Ground Truth as the anchor for every slider.</p>
       </section>
 
-      <section id="warmup-end-screen" class="panel hidden">
-        <p class="section-kicker">Warm-up completed</p>
-        <h2>Main evaluation starts now</h2>
-        <p class="muted">
-          You have completed the practice section. The full evaluation contains 50 main trials.
-        </p>
-        <button id="warmup-proceed-btn" class="button button-primary" type="button">Start main evaluation</button>
+      <section id="stage-outro-screen" class="panel hidden">
+        <p class="section-kicker" id="stage-outro-kicker">Stage completed</p>
+        <h2 id="stage-outro-title">Stage 1 completed</h2>
+        <p id="stage-outro-body" class="muted"></p>
+        <button id="stage-outro-btn" class="button button-primary" type="button">Continue</button>
       </section>
 
       <section id="thankyou-screen" class="panel hidden">

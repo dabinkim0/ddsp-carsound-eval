@@ -7,8 +7,7 @@
     "node": "22.x"
   },
   "scripts": {
-    "dev": "npx vercel dev",
-    "legacy:sql": "node ./scripts/export_legacy_results_sql.mjs"
+    "dev": "npx vercel dev"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.56.0"

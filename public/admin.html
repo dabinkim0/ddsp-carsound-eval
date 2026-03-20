@@ -13,7 +13,7 @@
           <p class="eyebrow">Admin dashboard</p>
           <h1>Real-time evaluation statistics</h1>
           <p class="hero-copy">
-            Review session completion, response volume, participant breakdowns, and per-trial preference trends.
+            Review session completion, response volume, participant breakdowns, and per-item score trends.
           </p>
         </div>
         <div class="hero-meta">
@@ -34,7 +34,7 @@
           <input id="admin-token" type="password" placeholder="Paste ADMIN_TOKEN">
           <button id="load-dashboard-btn" class="button button-primary" type="button">Load dashboard</button>
         </div>
-        <p id="admin-status" class="message muted">Enter the token configured in Cloudflare Pages.</p>
+        <p id="admin-status" class="message muted">Enter the token configured in Vercel.</p>
       </section>
 
       <section id="admin-dashboard" class="hidden">
@@ -52,12 +52,12 @@
             <strong id="metric-completion-rate">0%</strong>
           </article>
           <article class="metric-card">
-            <p>Proposed selection rate</p>
-            <strong id="metric-proposed-rate">0%</strong>
+            <p>Average score</p>
+            <strong id="metric-average-score">0.0</strong>
           </article>
           <article class="metric-card">
-            <p>Main responses</p>
-            <strong id="metric-main-responses">0</strong>
+            <p>Ratings recorded</p>
+            <strong id="metric-ratings-recorded">0</strong>
           </article>
           <article class="metric-card">
             <p>Started in last 24h</p>
@@ -69,18 +69,11 @@
           <article class="panel">
             <div class="section-head">
               <div>
-                <p class="section-kicker">Preference</p>
-                <h2>Overall selection</h2>
+                <p class="section-kicker">Stage averages</p>
+                <h2>Stage score summary</h2>
               </div>
             </div>
-            <div class="stack-bar">
-              <div id="baseline-bar" class="stack-bar-baseline">Baseline</div>
-              <div id="proposed-bar" class="stack-bar-proposed">Proposed</div>
-            </div>
-            <div class="legend-row">
-              <span id="baseline-label">Baseline 0</span>
-              <span id="proposed-label">Proposed 0</span>
-            </div>
+            <ul id="stage-averages" class="stat-list"></ul>
           </article>
 
           <article class="panel">
@@ -125,7 +118,7 @@
                   <th>Name</th>
                   <th>Email</th>
                   <th>Status</th>
-                  <th>Main responses</th>
+                  <th>Ratings recorded</th>
                   <th>Started</th>
                   <th>Completed</th>
                 </tr>
@@ -136,22 +129,22 @@
         </section>
 
         <section class="panel">
-          <div class="section-head">
-            <div>
-              <p class="section-kicker">Trial detail</p>
-              <h2>Per-trial preference</h2>
+            <div class="section-head">
+              <div>
+                <p class="section-kicker">Trial detail</p>
+                <h2>Per-item scores</h2>
+              </div>
             </div>
-          </div>
           <div class="table-wrap">
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>Trial</th>
-                  <th>Total responses</th>
-                  <th>Proposed</th>
-                  <th>Baseline</th>
-                  <th>Proposed rate</th>
-                  <th>Avg response time</th>
+                  <th>Stage</th>
+                  <th>Item</th>
+                  <th>Candidate</th>
+                  <th>Total ratings</th>
+                  <th>Average score</th>
+                  <th>Audio attached</th>
                 </tr>
               </thead>
               <tbody id="trial-stats"></tbody>
