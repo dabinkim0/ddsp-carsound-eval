@@ -3,7 +3,8 @@ const state = {
   stages: [],
   stageIndex: 0,
   itemIndex: 0,
-  instructionsHtml: ""
+  instructionsHtml: "",
+  ratingsByItem: {}
 };
 
 const elements = {
@@ -20,6 +21,7 @@ const elements = {
   submitStatus: document.getElementById("submit-status"),
   candidateList: document.getElementById("candidate-list"),
   groundTruthPlayer: document.getElementById("ground-truth-player"),
+  backBtn: document.getElementById("back-btn"),
   saveRatingsBtn: document.getElementById("save-ratings-btn"),
   quickGuideBtn: document.getElementById("quick-guide-btn"),
   stageIntroKicker: document.getElementById("stage-intro-kicker"),
@@ -41,6 +43,77 @@ function currentStage() {
 function currentItem() {
   const stage = currentStage();
   return stage ? stage.items[state.itemIndex] : null;
+}
+
+function getItemStateKey(stageKey, itemId) {
+  return `${stageKey}::${itemId}`;
+}
+
+function buildDefaultRatings(item) {
+  return item.candidates.map((candidate) => ({
+    candidateSlot: candidate.candidateSlot,
+    candidateId: candidate.candidateId,
+    candidateLabel: candidate.displayLabel,
+    candidatePath: candidate.path || null,
+    groundTruthPath: item.groundTruth.path || null,
+    hasAudio: Boolean(candidate.hasAudio),
+    score: 50
+  }));
+}
+
+function getStoredRatings(stage, item) {
+  const key = getItemStateKey(stage.key, item.id);
+  if (!state.ratingsByItem[key]) {
+    state.ratingsByItem[key] = buildDefaultRatings(item);
+  }
+
+  return state.ratingsByItem[key];
+}
+
+function storeRatingsForCurrentItem(ratings) {
+  const stage = currentStage();
+  const item = currentItem();
+  if (!stage || !item) {
+    return;
+  }
+
+  state.ratingsByItem[getItemStateKey(stage.key, item.id)] = ratings.map((rating) => ({
+    ...rating
+  }));
+}
+
+function readCurrentRatings() {
+  const item = currentItem();
+  if (!item) {
+    return [];
+  }
+
+  return Array.from(document.querySelectorAll(".mushra-slider")).map((slider) => ({
+    candidateSlot: Number.parseInt(slider.dataset.candidateSlot, 10),
+    candidateId: slider.dataset.candidateId,
+    candidateLabel: slider.dataset.candidateLabel,
+    candidatePath: slider.dataset.candidatePath || null,
+    groundTruthPath: item.groundTruth.path || null,
+    hasAudio: slider.dataset.hasAudio === "true",
+    score: Number.parseInt(slider.value, 10)
+  }));
+}
+
+function cacheCurrentRatingsFromDom() {
+  const sliders = document.querySelectorAll(".mushra-slider");
+  if (sliders.length === 0) {
+    return;
+  }
+
+  storeRatingsForCurrentItem(readCurrentRatings());
+}
+
+function hasPreviousItem() {
+  if (state.itemIndex > 0) {
+    return true;
+  }
+
+  return state.stageIndex > 0 && Boolean(state.stages[state.stageIndex - 1]?.items?.length);
 }
 
 function showError(message) {
@@ -191,16 +264,24 @@ function renderItem() {
   elements.progress.textContent = `${stage.title} item ${item.position} of ${stage.items.length}`;
   elements.question.textContent = item.prompt;
   elements.groundTruthPlayer.innerHTML = renderAudioBlock(item.groundTruth, "Reference");
+  elements.backBtn.disabled = !hasPreviousItem();
+
+  const ratingsBySlot = new Map(
+    getStoredRatings(stage, item).map((rating) => [rating.candidateSlot, rating.score])
+  );
 
   elements.candidateList.innerHTML = item.candidates
     .map(
-      (candidate) => `
+      (candidate) => {
+        const sliderValue = ratingsBySlot.get(candidate.candidateSlot) ?? 50;
+
+        return `
         <article class="audio-card candidate-card" data-candidate-slot="${candidate.candidateSlot}">
           <div class="candidate-card-head">
             <div>
               <p class="audio-title">${candidate.displayLabel}</p>
             </div>
-            <div class="slider-value" id="slider-value-${candidate.candidateSlot}">50</div>
+            <div class="slider-value" id="slider-value-${candidate.candidateSlot}">${sliderValue}</div>
           </div>
           <div class="candidate-player">
             ${renderAudioBlock(candidate, candidate.displayLabel)}
@@ -212,7 +293,7 @@ function renderItem() {
               min="0"
               max="100"
               step="1"
-              value="50"
+              value="${sliderValue}"
               data-candidate-id="${candidate.candidateId}"
               data-candidate-slot="${candidate.candidateSlot}"
               data-candidate-label="${candidate.displayLabel}"
@@ -226,7 +307,8 @@ function renderItem() {
             </div>
           </label>
         </article>
-      `
+      `;
+      }
     )
     .join("");
 
@@ -238,6 +320,8 @@ function renderItem() {
       if (valueNode) {
         valueNode.textContent = target.value;
       }
+
+      cacheCurrentRatingsFromDom();
     });
   }
 
@@ -253,49 +337,65 @@ async function submitCurrentItem() {
     return;
   }
 
-  const ratings = Array.from(document.querySelectorAll(".mushra-slider")).map((slider) => ({
-    candidateSlot: Number.parseInt(slider.dataset.candidateSlot, 10),
-    candidateId: slider.dataset.candidateId,
-    candidateLabel: slider.dataset.candidateLabel,
-    candidatePath: slider.dataset.candidatePath || null,
-    groundTruthPath: item.groundTruth.path || null,
-    hasAudio: slider.dataset.hasAudio === "true",
-    score: Number.parseInt(slider.value, 10)
-  }));
+  const ratings = readCurrentRatings();
+  storeRatingsForCurrentItem(ratings);
 
+  elements.backBtn.disabled = true;
   elements.saveRatingsBtn.disabled = true;
 
-  const response = await fetch("/api/respond", {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({
-      sessionId: state.sessionId,
-      stageKey: stage.key,
-      stageTitle: stage.title,
-      itemId: item.id,
-      itemTitle: item.title,
-      itemPosition: item.position,
-      ratings
-    })
-  });
+  try {
+    const response = await fetch("/api/respond", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        sessionId: state.sessionId,
+        stageKey: stage.key,
+        stageTitle: stage.title,
+        itemId: item.id,
+        itemTitle: item.title,
+        itemPosition: item.position,
+        ratings
+      })
+    });
 
-  const payload = await response.json().catch(() => null);
-  elements.saveRatingsBtn.disabled = false;
+    const payload = await response.json().catch(() => null);
 
-  if (!response.ok || !payload?.success) {
-    if (payload?.details) {
-      console.error("Failed to save item ratings:", payload.details);
+    if (!response.ok || !payload?.success) {
+      if (payload?.details) {
+        console.error("Failed to save item ratings:", payload.details);
+      }
+      throw new Error(payload?.message || "Failed to save.");
     }
-    throw new Error(payload?.message || "Failed to save.");
+
+    if (state.itemIndex < stage.items.length - 1) {
+      state.itemIndex += 1;
+      renderItem();
+      return;
+    }
+
+    showStageOutro();
+  } finally {
+    elements.backBtn.disabled = !hasPreviousItem();
+    elements.saveRatingsBtn.disabled = false;
+  }
+}
+
+function goToPreviousItem() {
+  if (!hasPreviousItem()) {
+    return;
   }
 
-  if (state.itemIndex < stage.items.length - 1) {
-    state.itemIndex += 1;
+  cacheCurrentRatingsFromDom();
+
+  if (state.itemIndex > 0) {
+    state.itemIndex -= 1;
     renderItem();
     return;
   }
 
-  showStageOutro();
+  state.stageIndex -= 1;
+  state.itemIndex = currentStage().items.length - 1;
+  renderItem();
 }
 
 async function completeSession() {
@@ -341,6 +441,7 @@ async function startSession(event) {
   state.stages = payload.stages || [];
   state.stageIndex = 0;
   state.itemIndex = 0;
+  state.ratingsByItem = {};
 
   elements.formScreen.classList.add("hidden");
   await loadInstructions();
@@ -357,6 +458,10 @@ elements.saveRatingsBtn.addEventListener("click", () => {
   submitCurrentItem().catch((error) => {
     showError(error.message);
   });
+});
+
+elements.backBtn.addEventListener("click", () => {
+  goToPreviousItem();
 });
 
 elements.quickGuideBtn.addEventListener("click", () => {
