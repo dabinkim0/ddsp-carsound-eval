@@ -168,6 +168,7 @@ button {
 
 fieldset.field {
   min-inline-size: 0;
+  border: 1px solid var(--border);
 }
 
 .field legend {
@@ -189,6 +190,11 @@ fieldset.field {
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 14px;
+  background: #fffdf9;
 }
 
 .radio-row label {
