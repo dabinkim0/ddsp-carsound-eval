@@ -4,10 +4,10 @@ This app runs a two-stage listening test on Vercel + Supabase.
 
 - Stage 1: Application of Engine Order
 - Stage 2: Model Architecture
-- Stage 1: 20 fixed items, 5 shuffled candidates per item plus Ground Truth
-- Stage 2: 20 fixed items, 7 shuffled candidates per item plus Ground Truth
+- Stage 1: 20 fixed items, 5 shuffled candidates per item plus Reference
+- Stage 2: 20 fixed items, 7 shuffled candidates per item plus Reference
 - Rating method: 0 to 100 sliders
-- Ground Truth is shown at the top of every item
+- Reference is shown at the top of every item
 - Candidate order is shuffled per session so participants cannot identify the method directly
 - The underlying source items are fixed across all participants
 

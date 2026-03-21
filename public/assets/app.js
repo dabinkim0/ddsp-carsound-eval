@@ -100,7 +100,7 @@ async function loadInstructions() {
     : `
       <div class="abx-intro">
         <h2>Quick guide</h2>
-        <p>Listen to the Ground Truth, then rate every candidate from 0 to 100 based on similarity.</p>
+        <p>Listen to the Reference, then rate every candidate from 0 to 100 based on similarity.</p>
         <button id="abx-intro-start" class="button button-primary" type="button">Start</button>
       </div>
     `;
@@ -174,7 +174,7 @@ function renderItem() {
   elements.phaseLabel.textContent = stage.title;
   elements.progress.textContent = `${stage.title} item ${item.position} of ${stage.items.length}`;
   elements.question.textContent = item.prompt;
-  elements.groundTruthPlayer.innerHTML = renderAudioBlock(item.groundTruth, "Ground Truth");
+  elements.groundTruthPlayer.innerHTML = renderAudioBlock(item.groundTruth, "Reference");
 
   elements.candidateList.innerHTML = item.candidates
     .map(
