@@ -416,7 +416,7 @@ function goToPreviousItem() {
 
 async function completeSession() {
   const successMessage =
-    "Your responses have been successfully recorded. Thank you for your participation. You may close this tab.";
+    "Your responses have been successfully recorded. Thank you for your participation.";
 
   elements.testScreen.classList.add("hidden");
   elements.stageIntroScreen.classList.add("hidden");
