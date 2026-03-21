@@ -415,11 +415,14 @@ function goToPreviousItem() {
 }
 
 async function completeSession() {
+  const successMessage =
+    "Your responses have been successfully recorded. Thank you for your participation. You may close this tab.";
+
   elements.testScreen.classList.add("hidden");
   elements.stageIntroScreen.classList.add("hidden");
   elements.stageOutroScreen.classList.add("hidden");
   elements.thankyouScreen.classList.remove("hidden");
-  elements.submitStatus.textContent = "Submitting results...";
+  elements.submitStatus.textContent = successMessage;
   scrollPanelIntoView(elements.thankyouScreen);
 
   const response = await fetch("/api/complete", {
@@ -434,7 +437,7 @@ async function completeSession() {
     return;
   }
 
-  elements.submitStatus.textContent = "Your responses were recorded successfully. You may close this tab.";
+  elements.submitStatus.textContent = successMessage;
 }
 
 async function startSession(event) {
