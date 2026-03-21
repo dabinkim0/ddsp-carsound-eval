@@ -159,10 +159,19 @@ button {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  margin: 0;
   padding: 16px;
   border-radius: 18px;
   background: rgba(247, 240, 223, 0.6);
   border: 1px solid var(--border);
+}
+
+fieldset.field {
+  min-inline-size: 0;
+}
+
+.field legend {
+  padding: 0;
 }
 
 .field input,

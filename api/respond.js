@@ -45,9 +45,17 @@ export default async function handler(req, res) {
       created_at: now
     }));
 
-    const { error } = await supabase.from("responses").upsert(responseRows, {
-      onConflict: "session_id,item_id,candidate_slot"
-    });
+    const { error: deleteError } = await supabase
+      .from("responses")
+      .delete()
+      .eq("session_id", sessionId)
+      .eq("item_id", itemId);
+
+    if (deleteError) {
+      throw deleteError;
+    }
+
+    const { error } = await supabase.from("responses").insert(responseRows);
 
     if (error) {
       throw error;
@@ -57,7 +65,7 @@ export default async function handler(req, res) {
       success: true
     });
   } catch (error) {
-    sendError(res, 500, "Failed to save the stage ratings.", {
+    sendError(res, 500, "Failed to save.", {
       details: error.message
     });
   }

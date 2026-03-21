@@ -100,7 +100,7 @@ async function loadInstructions() {
     : `
       <div class="abx-intro">
         <h2>Quick guide</h2>
-        <p>Listen to the Ground Truth first and then rate every candidate with its own slider.</p>
+        <p>Listen to the Ground Truth, then rate every candidate from 0 to 100 based on similarity.</p>
         <button id="abx-intro-start" class="button button-primary" type="button">Start</button>
       </div>
     `;
@@ -267,7 +267,10 @@ async function submitCurrentItem() {
   elements.saveRatingsBtn.disabled = false;
 
   if (!response.ok || !payload?.success) {
-    throw new Error(payload?.message || "Failed to save the stage ratings.");
+    if (payload?.details) {
+      console.error("Failed to save item ratings:", payload.details);
+    }
+    throw new Error(payload?.message || "Failed to save.");
   }
 
   if (state.itemIndex < stage.items.length - 1) {
