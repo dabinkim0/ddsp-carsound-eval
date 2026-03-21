@@ -262,6 +262,17 @@ fieldset.field {
   margin-bottom: 18px;
 }
 
+.progress-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.button-compact {
+  padding: 10px 14px;
+}
+
 .audio-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -610,6 +621,10 @@ audio {
 
   .slider-value {
     align-self: flex-start;
+  }
+
+  .progress-side {
+    align-items: stretch;
   }
 
   .audio-shell-controls {

@@ -2,7 +2,8 @@ const state = {
   sessionId: null,
   stages: [],
   stageIndex: 0,
-  itemIndex: 0
+  itemIndex: 0,
+  instructionsHtml: ""
 };
 
 const elements = {
@@ -20,6 +21,7 @@ const elements = {
   candidateList: document.getElementById("candidate-list"),
   groundTruthPlayer: document.getElementById("ground-truth-player"),
   saveRatingsBtn: document.getElementById("save-ratings-btn"),
+  quickGuideBtn: document.getElementById("quick-guide-btn"),
   stageIntroKicker: document.getElementById("stage-intro-kicker"),
   stageIntroTitle: document.getElementById("stage-intro-title"),
   stageIntroBody: document.getElementById("stage-intro-body"),
@@ -93,30 +95,40 @@ function renderAudioBlock(audioDescriptor, label) {
   `;
 }
 
-async function loadInstructions() {
-  const response = await fetch("/abx_instructions.html", { cache: "no-store" });
-  const html = response.ok
-    ? await response.text()
-    : `
-      <div class="abx-intro">
-        <h2>Quick guide</h2>
-        <p>Listen to the Reference, then rate every candidate from 0 to 100 based on similarity.</p>
-        <button id="abx-intro-start" class="button button-primary" type="button">Start</button>
-      </div>
-    `;
+function getFallbackInstructionsHtml() {
+  return `
+    <div class="abx-intro">
+      <h2>Quick guide</h2>
+      <p>Listen to the Reference, then rate every candidate from 0 to 100 based on similarity.</p>
+    </div>
+  `;
+}
 
+async function ensureInstructionsHtml() {
+  if (state.instructionsHtml) {
+    return state.instructionsHtml;
+  }
+
+  const response = await fetch("/abx_instructions.html", { cache: "no-store" });
+  state.instructionsHtml = response.ok ? await response.text() : getFallbackInstructionsHtml();
+  return state.instructionsHtml;
+}
+
+async function openInstructionsOverlay(actionLabel = "Close") {
+  const html = await ensureInstructionsHtml();
   elements.overlayContent.innerHTML = html;
+
   let button = elements.overlayContent.querySelector("#abx-intro-start");
   if (!button) {
     button = document.createElement("button");
     button.id = "abx-intro-start";
     button.className = "button button-primary";
     button.type = "button";
-    button.textContent = "Start";
     button.style.marginTop = "18px";
     elements.overlayContent.appendChild(button);
   }
 
+  button.textContent = actionLabel;
   elements.overlay.classList.remove("hidden");
 
   await new Promise((resolve) => {
@@ -130,6 +142,10 @@ async function loadInstructions() {
       { once: true }
     );
   });
+}
+
+async function loadInstructions() {
+  await openInstructionsOverlay("Start");
 }
 
 function showStageIntro() {
@@ -339,6 +355,12 @@ elements.form.addEventListener("submit", (event) => {
 
 elements.saveRatingsBtn.addEventListener("click", () => {
   submitCurrentItem().catch((error) => {
+    showError(error.message);
+  });
+});
+
+elements.quickGuideBtn.addEventListener("click", () => {
+  openInstructionsOverlay("Close").catch((error) => {
     showError(error.message);
   });
 });
