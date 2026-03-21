@@ -7,22 +7,26 @@ import shutil
 from pathlib import Path
 
 FIXED_SOURCE_ITEM_IDS = [
-    "035",
-    "179",
-    "178",
-    "010",
-    "009",
-    "057",
-    "080",
-    "074",
-    "050",
-    "068",
+    "000",
+    "018",
+    "020",
+    "023",
+    "024",
     "031",
-    "089",
-    "039",
-    "172",
+    "041",
+    "052",
+    "055",
+    "067",
+    "070",
+    "080",
+    "091",
+    "095",
+    "099",
     "102",
-    "132",
+    "104",
+    "112",
+    "172",
+    "179",
 ]
 
 STAGE_CONFIG = {
@@ -54,13 +58,13 @@ STAGE_CONFIG = {
 def parse_args() -> argparse.Namespace:
     repo_root = Path(__file__).resolve().parents[1]
     parser = argparse.ArgumentParser(
-        description="Copy the fixed AES selected 16kHz subset into public/samples/aes-selected."
+        description="Copy the fixed AES selected 16kHz v1 set into public/samples/aes-selected."
     )
     parser.add_argument(
         "--source-root",
         type=Path,
-        default=repo_root.parent / "AES_ListeningTestset_v0",
-        help="Path to the AES_ListeningTestset_v0 root.",
+        default=repo_root.parent / "AES_ListeningTestset_v1",
+        help="Path to the AES_ListeningTestset_v1 root.",
     )
     parser.add_argument(
         "--target-root",
