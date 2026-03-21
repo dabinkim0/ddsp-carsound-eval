@@ -145,7 +145,7 @@ button {
   display: block;
   line-height: 1.45;
   text-align: left;
-  text-wrap: pretty;
+  text-wrap: nowrap;
   word-break: keep-all;
   overflow-wrap: normal;
 }
@@ -286,7 +286,7 @@ fieldset.field {
 
 .progress-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(250px, 320px);
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 16px;
   align-items: start;
   margin-bottom: 18px;
@@ -295,7 +295,8 @@ fieldset.field {
 .progress-side {
   display: grid;
   gap: 10px;
-  width: 100%;
+  width: max-content;
+  max-width: 100%;
   justify-self: end;
 }
 
@@ -304,7 +305,7 @@ fieldset.field {
 }
 
 .progress-side .status-badge {
-  width: 100%;
+  width: auto;
 }
 
 .button-compact {
@@ -590,17 +591,26 @@ audio {
   }
 }
 
-@media (max-width: 780px) {
+@media (max-width: 980px) {
   .progress-row {
     grid-template-columns: 1fr;
   }
 
   .progress-side {
+    width: 100%;
     justify-self: stretch;
   }
 
   .progress-side .button {
     justify-self: stretch;
+  }
+
+  .progress-side .status-badge {
+    width: 100%;
+  }
+
+  .status-badge {
+    text-wrap: pretty;
   }
 }
 
