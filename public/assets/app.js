@@ -131,6 +131,19 @@ function clearError() {
   elements.formError.classList.add("hidden");
 }
 
+function scrollPanelIntoView(panel) {
+  if (!panel) {
+    return;
+  }
+
+  window.requestAnimationFrame(() => {
+    panel.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  });
+}
+
 function serializeParticipant() {
   const gender = document.querySelector('input[name="gender"]:checked');
   const audioExpertise = document.querySelector('input[name="audio_expertise"]:checked');
@@ -234,6 +247,7 @@ function showStageIntro() {
   elements.stageIntroTitle.textContent = stage.introTitle;
   elements.stageIntroBody.textContent = stage.introBody;
   elements.stageIntroScreen.classList.remove("hidden");
+  scrollPanelIntoView(elements.stageIntroScreen);
 }
 
 function showStageOutro() {
@@ -249,6 +263,7 @@ function showStageOutro() {
   elements.stageOutroTitle.textContent = stage.outroTitle;
   elements.stageOutroBody.textContent = stage.outroBody;
   elements.stageOutroScreen.classList.remove("hidden");
+  scrollPanelIntoView(elements.stageOutroScreen);
 }
 
 function renderItem() {
@@ -328,6 +343,7 @@ function renderItem() {
   elements.stageIntroScreen.classList.add("hidden");
   elements.stageOutroScreen.classList.add("hidden");
   elements.testScreen.classList.remove("hidden");
+  scrollPanelIntoView(elements.testScreen);
 }
 
 async function submitCurrentItem() {
@@ -404,6 +420,7 @@ async function completeSession() {
   elements.stageOutroScreen.classList.add("hidden");
   elements.thankyouScreen.classList.remove("hidden");
   elements.submitStatus.textContent = "Submitting results...";
+  scrollPanelIntoView(elements.thankyouScreen);
 
   const response = await fetch("/api/complete", {
     method: "POST",
