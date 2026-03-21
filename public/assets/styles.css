@@ -227,6 +227,10 @@ fieldset.field {
   grid-column: 1 / -1;
 }
 
+.choice-row {
+  margin-top: 26px;
+}
+
 .button {
   appearance: none;
   border: 0;
