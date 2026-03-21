@@ -126,8 +126,6 @@ button {
 
 .hero-meta span,
 .status-badge {
-  display: inline-flex;
-  align-items: center;
   border-radius: 999px;
   padding: 10px 14px;
   background: rgba(13, 111, 99, 0.08);
@@ -136,6 +134,20 @@ button {
   font-weight: 500;
   max-width: 100%;
   white-space: normal;
+}
+
+.hero-meta span {
+  display: inline-flex;
+  align-items: center;
+}
+
+.status-badge {
+  display: block;
+  line-height: 1.45;
+  text-align: left;
+  text-wrap: pretty;
+  word-break: keep-all;
+  overflow-wrap: normal;
 }
 
 .panel {
