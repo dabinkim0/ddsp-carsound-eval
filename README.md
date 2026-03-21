@@ -1,4 +1,4 @@
-# DDSP Car Sound Evaluation
+# Car Sound Synthesis Listening Test
 
 This app runs a two-stage listening test on Vercel + Supabase.
 
