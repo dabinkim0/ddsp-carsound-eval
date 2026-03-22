@@ -37,6 +37,19 @@ body {
   margin: 0 auto;
 }
 
+.guide-bar {
+  position: sticky;
+  top: calc(12px + env(safe-area-inset-top, 0px));
+  z-index: 20;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.guide-bar .button {
+  box-shadow: 0 10px 24px rgba(31, 27, 22, 0.12);
+}
+
 .hero,
 .panel,
 .metric-card {
@@ -297,10 +310,6 @@ fieldset.field {
   gap: 10px;
   width: max-content;
   max-width: 100%;
-  justify-self: end;
-}
-
-.progress-side .button {
   justify-self: end;
 }
 
@@ -665,6 +674,10 @@ audio {
   .button,
   .inline-form input {
     width: 100%;
+  }
+
+  .guide-bar {
+    justify-content: stretch;
   }
 
   .status-badge {

@@ -184,7 +184,7 @@ function renderAudioBlock(audioDescriptor, label) {
 function getFallbackInstructionsHtml() {
   return `
     <div class="abx-intro">
-      <h2>Quick guide</h2>
+      <h2>Car Sound Synthesis Listening Test<br>Quick Guide</h2>
       <p>Listen to the Reference, then rate every candidate from 0 to 100 based on similarity.</p>
     </div>
   `;
@@ -200,7 +200,7 @@ async function ensureInstructionsHtml() {
   return state.instructionsHtml;
 }
 
-async function openInstructionsOverlay(actionLabel = "Close") {
+async function openInstructionsOverlay() {
   const html = await ensureInstructionsHtml();
   elements.overlayContent.innerHTML = html;
 
@@ -214,24 +214,41 @@ async function openInstructionsOverlay(actionLabel = "Close") {
     elements.overlayContent.appendChild(button);
   }
 
-  button.textContent = actionLabel;
+  button.textContent = "Close";
   elements.overlay.classList.remove("hidden");
 
   await new Promise((resolve) => {
-    button.addEventListener(
-      "click",
-      () => {
-        elements.overlay.classList.add("hidden");
-        elements.overlayContent.innerHTML = "";
-        resolve();
-      },
-      { once: true }
-    );
+    let closed = false;
+
+    const closeOverlay = () => {
+      if (closed) {
+        return;
+      }
+
+      closed = true;
+      elements.overlay.classList.add("hidden");
+      elements.overlayContent.innerHTML = "";
+      elements.overlay.removeEventListener("click", handleOverlayClick);
+      button.removeEventListener("click", handleButtonClick);
+      resolve();
+    };
+
+    const handleButtonClick = (event) => {
+      event.stopPropagation();
+      closeOverlay();
+    };
+
+    const handleOverlayClick = () => {
+      closeOverlay();
+    };
+
+    button.addEventListener("click", handleButtonClick);
+    elements.overlay.addEventListener("click", handleOverlayClick);
   });
 }
 
 async function loadInstructions() {
-  await openInstructionsOverlay("Start");
+  await openInstructionsOverlay();
 }
 
 function showStageIntro() {
@@ -485,7 +502,7 @@ elements.backBtn.addEventListener("click", () => {
 });
 
 elements.quickGuideBtn.addEventListener("click", () => {
-  openInstructionsOverlay("Close").catch((error) => {
+  openInstructionsOverlay().catch((error) => {
     showError(error.message);
   });
 });

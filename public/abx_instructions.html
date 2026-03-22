@@ -1,22 +1,16 @@
 <style>
-  .abx-intro h2 { text-align: center; }
-  .abx-intro { font-size: 15px; line-height: 1.5; }
+  .abx-intro { display: grid; gap: 18px; font-size: 15px; line-height: 1.5; }
+  .abx-intro h2 { margin: 0; text-align: center; line-height: 1.2; }
   .abx-intro .lang-block { background: #fafafa; border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px 14px; }
   .abx-intro .lang-block ul { margin: 0.4rem 0; padding-left: 18px; list-style: disc; }
   .abx-intro .lang-block ul ul { margin-top: 0.45rem; padding-left: 18px; list-style: disc; }
   .abx-intro .lang-block li { margin: 0.3rem 0; }
-  #abx-intro-start { display: block; margin: 14px auto 0; }
-  /* Desktop */
-  @media (min-width: 640px) {
-    .abx-intro .lang-block { float: center; width: calc(97.5% - 12px); margin: 0; }
-    .abx-intro .lang-block.en { margin-right: 24px; }
-    .abx-intro::after { content: ""; display: table; clear: both; }
-    .abx-intro hr { display: none; }
-  }
+  .abx-intro hr { display: none; }
+  #abx-intro-start { display: block; margin: 0 auto; }
 </style>
 
 <div class="abx-intro">
-  <h2>Car Sound Synthesis Listening Test — Quick Guide</h2>
+  <h2>Car Sound Synthesis Listening Test<br>Quick Guide</h2>
 
   <div class="lang-block en">
     <ul>
@@ -62,5 +56,5 @@
     </ul>
   </div>
   
-  <button id="abx-intro-start">Start</button>
+  <button id="abx-intro-start">Close</button>
 </div>
