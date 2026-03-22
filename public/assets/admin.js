@@ -14,6 +14,8 @@ const elements = {
   metricRatingsRecorded: document.getElementById("metric-ratings-recorded"),
   metricLast24Hours: document.getElementById("metric-last-24h"),
   stageAverages: document.getElementById("stage-averages"),
+  testAItemAverages: document.getElementById("test-a-item-averages"),
+  testBItemAverages: document.getElementById("test-b-item-averages"),
   ageGroups: document.getElementById("age-groups"),
   genders: document.getElementById("genders"),
   audioExpertise: document.getElementById("audio-expertise"),
@@ -81,6 +83,63 @@ function renderList(target, rows) {
     .join("");
 }
 
+function buildItemAverageGroups(trials) {
+  const stages = new Map();
+
+  for (const trial of trials) {
+    if (!stages.has(trial.stageKey)) {
+      stages.set(trial.stageKey, {
+        stageTitle: trial.stageTitle,
+        items: new Map()
+      });
+    }
+
+    const stage = stages.get(trial.stageKey);
+    if (!stage.items.has(trial.itemId)) {
+      stage.items.set(trial.itemId, {
+        itemTitle: trial.itemTitle,
+        totalRatings: 0,
+        scoreSum: 0
+      });
+    }
+
+    const item = stage.items.get(trial.itemId);
+    const totalRatings = Number(trial.totalRatings) || 0;
+    const averageScore = Number(trial.averageScore) || 0;
+
+    item.totalRatings += totalRatings;
+    item.scoreSum += averageScore * totalRatings;
+  }
+
+  return new Map(
+    Array.from(stages.entries()).map(([stageKey, stage]) => [
+      stageKey,
+      Array.from(stage.items.values()).map((item) => ({
+        itemTitle: item.itemTitle.replace(`${stage.stageTitle} `, ""),
+        averageScore: item.totalRatings ? item.scoreSum / item.totalRatings : null
+      }))
+    ])
+  );
+}
+
+function renderItemAverages(target, items) {
+  if (!items.length) {
+    target.innerHTML = '<li><span>No ratings yet</span><strong>-</strong></li>';
+    return;
+  }
+
+  target.innerHTML = items
+    .map(
+      (item) => `
+        <li>
+          <span>${item.itemTitle}</span>
+          <strong>${formatScore(item.averageScore)}</strong>
+        </li>
+      `
+    )
+    .join("");
+}
+
 function renderSummary(payload) {
   const {
     summary = {},
@@ -142,6 +201,10 @@ function renderSummary(payload) {
 
 function renderTrials(payload) {
   const trials = payload.trials || [];
+  const itemAverageGroups = buildItemAverageGroups(trials);
+
+  renderItemAverages(elements.testAItemAverages, itemAverageGroups.get("stage1") || []);
+  renderItemAverages(elements.testBItemAverages, itemAverageGroups.get("stage2") || []);
 
   elements.trialStats.innerHTML = trials.length
     ? trials

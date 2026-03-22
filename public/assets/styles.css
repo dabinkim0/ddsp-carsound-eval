@@ -563,6 +563,12 @@ audio {
   gap: 16px;
 }
 
+.summary-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
 .stat-list {
   list-style: none;
   padding: 0;
@@ -636,7 +642,8 @@ audio {
   .audio-grid,
   .dashboard-grid,
   .metric-grid,
-  .demographic-columns {
+  .demographic-columns,
+  .summary-columns {
     grid-template-columns: 1fr;
   }
 
