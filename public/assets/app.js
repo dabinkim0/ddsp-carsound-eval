@@ -17,7 +17,6 @@ const elements = {
   formError: document.getElementById("form-error"),
   phaseLabel: document.getElementById("phase-label"),
   progress: document.getElementById("progress"),
-  question: document.getElementById("question"),
   submitStatus: document.getElementById("submit-status"),
   candidateList: document.getElementById("candidate-list"),
   groundTruthPlayer: document.getElementById("ground-truth-player"),
@@ -109,11 +108,7 @@ function cacheCurrentRatingsFromDom() {
 }
 
 function hasPreviousItem() {
-  if (state.itemIndex > 0) {
-    return true;
-  }
-
-  return state.stageIndex > 0 && Boolean(state.stages[state.stageIndex - 1]?.items?.length);
+  return state.itemIndex > 0;
 }
 
 function showError(message) {
@@ -294,7 +289,6 @@ function renderItem() {
 
   elements.phaseLabel.textContent = stage.title;
   elements.progress.textContent = `${stage.title} item ${item.position} of ${stage.items.length}`;
-  elements.question.textContent = item.prompt;
   elements.groundTruthPlayer.innerHTML = renderAudioBlock(item.groundTruth, "Reference");
   elements.backBtn.disabled = !hasPreviousItem();
 
@@ -313,12 +307,16 @@ function renderItem() {
             <div>
               <p class="audio-title">${candidate.displayLabel}</p>
             </div>
-            <div class="slider-value" id="slider-value-${candidate.candidateSlot}">${sliderValue}</div>
           </div>
           <div class="candidate-player">
             ${renderAudioBlock(candidate, candidate.displayLabel)}
           </div>
-          <label class="slider-block">
+          <label
+            class="slider-block"
+            id="slider-block-${candidate.candidateSlot}"
+            style="--slider-percent: ${sliderValue / 100};"
+          >
+            <div class="slider-current-value" id="slider-value-${candidate.candidateSlot}">${sliderValue}</div>
             <input
               class="mushra-slider"
               type="range"
@@ -334,7 +332,6 @@ function renderItem() {
             >
             <div class="slider-scale">
               <span>0</span>
-              <span>50</span>
               <span>100</span>
             </div>
           </label>
@@ -349,8 +346,12 @@ function renderItem() {
       const target = event.currentTarget;
       const slot = target.dataset.candidateSlot;
       const valueNode = document.getElementById(`slider-value-${slot}`);
+      const blockNode = document.getElementById(`slider-block-${slot}`);
       if (valueNode) {
         valueNode.textContent = target.value;
+      }
+      if (blockNode) {
+        blockNode.style.setProperty("--slider-percent", String(Number.parseInt(target.value, 10) / 100));
       }
 
       cacheCurrentRatingsFromDom();
@@ -406,6 +407,13 @@ async function submitCurrentItem() {
       return;
     }
 
+    if (state.stageIndex === state.stages.length - 1) {
+      completeSession().catch((error) => {
+        showError(error.message);
+      });
+      return;
+    }
+
     showStageOutro();
   } finally {
     elements.backBtn.disabled = !hasPreviousItem();
@@ -419,15 +427,7 @@ function goToPreviousItem() {
   }
 
   cacheCurrentRatingsFromDom();
-
-  if (state.itemIndex > 0) {
-    state.itemIndex -= 1;
-    renderItem();
-    return;
-  }
-
-  state.stageIndex -= 1;
-  state.itemIndex = currentStage().items.length - 1;
+  state.itemIndex -= 1;
   renderItem();
 }
 
@@ -516,7 +516,7 @@ elements.stageOutroBtn.addEventListener("click", () => {
   if (state.stageIndex < state.stages.length - 1) {
     state.stageIndex += 1;
     state.itemIndex = 0;
-    showStageIntro();
+    renderItem();
     return;
   }
 
