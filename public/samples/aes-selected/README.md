@@ -1,12 +1,12 @@
 # AES Selected Audio Layout
 
-This directory contains the fixed 20-item selected set copied from:
+This directory contains the fixed 15-item selected set copied from:
 
-- [`/Users/dabinkim/Desktop/Research Projects/2026_DDSPCarSound/AES_ListeningTestset_v1`](/Users/dabinkim/Desktop/Research%20Projects/2026_DDSPCarSound/AES_ListeningTestset_v1)
+- [`/Users/dabinkim/Desktop/Research Projects/2026_DDSPCarSound/AES_ListeningTestset_v2`](/Users/dabinkim/Desktop/Research%20Projects/2026_DDSPCarSound/AES_ListeningTestset_v2)
 
 Fixed source item IDs:
 
-`000, 018, 020, 023, 024, 031, 041, 052, 055, 067, 070, 080, 091, 095, 099, 102, 104, 112, 172, 179`
+`000, 023, 024, 031, 041, 052, 080, 091, 095, 099, 102, 104, 112, 172, 179`
 
 Directory format:
 
@@ -21,7 +21,7 @@ public/samples/aes-selected/
       c2_encoder.wav
       c1_encoder.wav
     ...
-    item20/
+    item15/
       ...
   stage2/
     item01/
@@ -34,7 +34,7 @@ public/samples/aes-selected/
       c1_direct_full.wav
       c1_encoder_full.wav
     ...
-    item20/
+    item15/
       ...
 ```
 

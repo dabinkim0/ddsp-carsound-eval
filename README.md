@@ -4,8 +4,8 @@ This app runs a two-stage listening test on Vercel + Supabase.
 
 - Stage 1: Application of Engine Order
 - Stage 2: Model Architecture
-- Stage 1: 20 fixed items, 5 shuffled candidates per item plus Reference
-- Stage 2: 20 fixed items, 7 shuffled candidates per item plus Reference
+- Stage 1: 15 fixed items, 5 shuffled candidates per item plus Reference
+- Stage 2: 15 fixed items, 7 shuffled candidates per item plus Reference
 - Rating method: 0 to 100 sliders
 - Reference is shown at the top of every item
 - Candidate order is shuffled per session so participants cannot identify the method directly
@@ -19,7 +19,7 @@ The fixed stage setup is defined in:
 
 Important defaults:
 
-- Fixed source item IDs: `000, 018, 020, 023, 024, 031, 041, 052, 055, 067, 070, 080, 091, 095, 099, 102, 104, 112, 172, 179`
+- Fixed source item IDs: `000, 023, 024, 031, 041, 052, 080, 091, 095, 099, 102, 104, 112, 172, 179`
 - `AUDIO_ROOT = "/samples/aes-selected"`
 
 Current candidate IDs:
@@ -27,7 +27,7 @@ Current candidate IDs:
 - Stage 1: `reference_test`, `c2_direct`, `c1_direct`, `c2_encoder`, `c1_encoder`
 - Stage 2: `reference_test`, `c1_direct_rpm`, `c1_encoder_rpm`, `c1_direct_rpm_pedal_gear`, `c1_encoder_rpm_pedal_gear`, `c1_direct_full`, `c1_encoder_full`
 
-The current item set uses all 20 shared items from the v1 TestA/TestB `processed/selected/16kHz` pool and is fixed for every participant.
+The current item set uses the fixed 15-item subset from the v2 TestA/TestB `processed/selected/16kHz` pool and is fixed for every participant.
 
 ## Vercel + Supabase setup
 
@@ -105,9 +105,9 @@ npx vercel dev
 
 ## 5. Audio sync
 
-The deployed app serves a fixed 20-item selected set copied from `AES_ListeningTestset_v1`.
+The deployed app serves a fixed 15-item selected set copied from `AES_ListeningTestset_v2`.
 
-- Source dataset root: [`/Users/dabinkim/Desktop/Research Projects/2026_DDSPCarSound/AES_ListeningTestset_v1`](/Users/dabinkim/Desktop/Research%20Projects/2026_DDSPCarSound/AES_ListeningTestset_v1)
+- Source dataset root: [`/Users/dabinkim/Desktop/Research Projects/2026_DDSPCarSound/AES_ListeningTestset_v2`](/Users/dabinkim/Desktop/Research%20Projects/2026_DDSPCarSound/AES_ListeningTestset_v2)
 - Target asset root: [`public/samples/aes-selected`](/Users/dabinkim/Desktop/Research%20Projects/2026_DDSPCarSound/ddsp-carsound-eval/public/samples/aes-selected)
 - Sync script: [`scripts/sync_aes_selected_audio.py`](/Users/dabinkim/Desktop/Research%20Projects/2026_DDSPCarSound/ddsp-carsound-eval/scripts/sync_aes_selected_audio.py)
 - Layout reference: [`public/samples/aes-selected/README.md`](/Users/dabinkim/Desktop/Research%20Projects/2026_DDSPCarSound/ddsp-carsound-eval/public/samples/aes-selected/README.md)

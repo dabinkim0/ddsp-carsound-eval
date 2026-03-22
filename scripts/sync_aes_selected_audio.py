@@ -8,16 +8,11 @@ from pathlib import Path
 
 FIXED_SOURCE_ITEM_IDS = [
     "000",
-    "018",
-    "020",
     "023",
     "024",
     "031",
     "041",
     "052",
-    "055",
-    "067",
-    "070",
     "080",
     "091",
     "095",
@@ -58,13 +53,13 @@ STAGE_CONFIG = {
 def parse_args() -> argparse.Namespace:
     repo_root = Path(__file__).resolve().parents[1]
     parser = argparse.ArgumentParser(
-        description="Copy the fixed AES selected 16kHz v1 set into public/samples/aes-selected."
+        description="Copy the fixed AES selected 16kHz v2 set into public/samples/aes-selected."
     )
     parser.add_argument(
         "--source-root",
         type=Path,
-        default=repo_root.parent / "AES_ListeningTestset_v1",
-        help="Path to the AES_ListeningTestset_v1 root.",
+        default=repo_root.parent / "AES_ListeningTestset_v2",
+        help="Path to the AES_ListeningTestset_v2 root.",
     )
     parser.add_argument(
         "--target-root",
