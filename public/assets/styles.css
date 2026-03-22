@@ -37,19 +37,6 @@ body {
   margin: 0 auto;
 }
 
-.guide-bar {
-  position: sticky;
-  top: calc(12px + env(safe-area-inset-top, 0px));
-  z-index: 20;
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 16px;
-}
-
-.guide-bar .button {
-  box-shadow: 0 10px 24px rgba(31, 27, 22, 0.12);
-}
-
 .hero,
 .panel,
 .metric-card {
@@ -63,6 +50,19 @@ body {
   padding: 30px 32px;
   border-radius: 28px;
   background: linear-gradient(135deg, rgba(255, 250, 242, 0.95), rgba(247, 240, 223, 0.92));
+}
+
+.hero-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.hero-topline .button,
+.progress-row .button {
+  flex-shrink: 0;
+  box-shadow: 0 10px 24px rgba(31, 27, 22, 0.1);
 }
 
 .eyebrow,
@@ -298,7 +298,17 @@ fieldset.field {
 }
 
 .progress-row {
-  margin-bottom: 18px;
+  position: sticky;
+  top: calc(12px + env(safe-area-inset-top, 0px));
+  z-index: 12;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin: -4px 0 18px;
+  padding: 4px 0 12px;
+  background: rgba(255, 250, 242, 0.94);
+  backdrop-filter: blur(6px);
 }
 
 .button-compact {
@@ -681,6 +691,8 @@ audio {
   }
 
   .section-head,
+  .hero-topline,
+  .progress-row,
   .inline-form,
   .actions,
   .choice-row {
@@ -691,10 +703,6 @@ audio {
   .button,
   .inline-form input {
     width: 100%;
-  }
-
-  .guide-bar {
-    justify-content: stretch;
   }
 
   .status-badge {

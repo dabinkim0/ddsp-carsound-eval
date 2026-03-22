@@ -22,7 +22,7 @@ const elements = {
   groundTruthPlayer: document.getElementById("ground-truth-player"),
   backBtn: document.getElementById("back-btn"),
   saveRatingsBtn: document.getElementById("save-ratings-btn"),
-  quickGuideBtn: document.getElementById("quick-guide-btn"),
+  quickGuideButtons: Array.from(document.querySelectorAll(".quick-guide-trigger")),
   stageIntroKicker: document.getElementById("stage-intro-kicker"),
   stageIntroTitle: document.getElementById("stage-intro-title"),
   stageIntroBody: document.getElementById("stage-intro-body"),
@@ -501,11 +501,13 @@ elements.backBtn.addEventListener("click", () => {
   goToPreviousItem();
 });
 
-elements.quickGuideBtn.addEventListener("click", () => {
-  openInstructionsOverlay().catch((error) => {
-    showError(error.message);
+for (const button of elements.quickGuideButtons) {
+  button.addEventListener("click", () => {
+    openInstructionsOverlay().catch((error) => {
+      showError(error.message);
+    });
   });
-});
+}
 
 elements.stageIntroBtn.addEventListener("click", () => {
   state.itemIndex = 0;
