@@ -3,22 +3,22 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>DDSP Car Sound Admin</title>
+    <title>Car Sound Synthesis Listening Test Admin</title>
     <link rel="stylesheet" href="/assets/styles.css">
   </head>
   <body class="app-shell">
     <main class="site-wrap">
       <section class="hero">
         <div>
-          <p class="eyebrow">Admin dashboard</p>
-          <h1>Real-time evaluation statistics</h1>
+          <p class="eyebrow">Admin Dashboard</p>
+          <h1>Real-Time Evaluation Statistics</h1>
           <p class="hero-copy">
             Review session completion, response volume, participant breakdowns, and per-item score trends.
           </p>
         </div>
         <div class="hero-meta">
-          <span>Protected by token</span>
-          <span>Auto-refresh every 30s</span>
+          <span>Protected by Token</span>
+          <span>Auto-Refresh Every 30s</span>
         </div>
       </section>
 
@@ -26,13 +26,13 @@
         <div class="section-head">
           <div>
             <p class="section-kicker">Authentication</p>
-            <h2>Admin access</h2>
+            <h2>Admin Access</h2>
           </div>
-          <button id="clear-token-btn" class="button button-secondary" type="button">Clear token</button>
+          <button id="clear-token-btn" class="button button-secondary" type="button">Clear Token</button>
         </div>
         <div class="inline-form">
           <input id="admin-token" type="password" placeholder="Paste ADMIN_TOKEN">
-          <button id="load-dashboard-btn" class="button button-primary" type="button">Load dashboard</button>
+          <button id="load-dashboard-btn" class="button button-primary" type="button">Load Dashboard</button>
         </div>
         <p id="admin-status" class="message muted">Enter the token configured in Vercel.</p>
       </section>
@@ -40,27 +40,27 @@
       <section id="admin-dashboard" class="hidden">
         <section class="metric-grid">
           <article class="metric-card">
-            <p>Sessions started</p>
+            <p>Sessions Started</p>
             <strong id="metric-started">0</strong>
           </article>
           <article class="metric-card">
-            <p>Sessions completed</p>
+            <p>Sessions Completed</p>
             <strong id="metric-completed">0</strong>
           </article>
           <article class="metric-card">
-            <p>Completion rate</p>
+            <p>Completion Rate</p>
             <strong id="metric-completion-rate">0%</strong>
           </article>
           <article class="metric-card">
-            <p>Average score</p>
+            <p>Average Score</p>
             <strong id="metric-average-score">0.0</strong>
           </article>
           <article class="metric-card">
-            <p>Ratings recorded</p>
+            <p>Ratings Recorded</p>
             <strong id="metric-ratings-recorded">0</strong>
           </article>
           <article class="metric-card">
-            <p>Started in last 24h</p>
+            <p>Started in Last 24h</p>
             <strong id="metric-last-24h">0</strong>
           </article>
         </section>
@@ -68,8 +68,8 @@
         <section class="panel">
           <div class="section-head">
             <div>
-              <p class="section-kicker">Final summary</p>
-              <h2>Per-item average scores</h2>
+              <p class="section-kicker">Final Summary</p>
+              <h2>Per-Item Average Scores</h2>
             </div>
           </div>
           <div class="summary-columns">
@@ -88,8 +88,8 @@
           <article class="panel">
             <div class="section-head">
               <div>
-                <p class="section-kicker">Stage averages</p>
-                <h2>Stage score summary</h2>
+                <p class="section-kicker">Stage Averages</p>
+                <h2>Stage Score Summary</h2>
               </div>
             </div>
             <ul id="stage-averages" class="stat-list"></ul>
@@ -126,8 +126,8 @@
         <section class="panel">
           <div class="section-head">
             <div>
-              <p class="section-kicker">Recent activity</p>
-              <h2>Latest sessions</h2>
+              <p class="section-kicker">Recent Activity</p>
+              <h2>Latest Sessions</h2>
             </div>
           </div>
           <div class="table-wrap">
@@ -137,7 +137,7 @@
                   <th>Name</th>
                   <th>Email</th>
                   <th>Status</th>
-                  <th>Ratings recorded</th>
+                  <th>Ratings Recorded</th>
                   <th>Started</th>
                   <th>Completed</th>
                 </tr>
@@ -150,8 +150,8 @@
         <section class="panel">
             <div class="section-head">
               <div>
-                <p class="section-kicker">Trial detail</p>
-                <h2>Per-item scores</h2>
+                <p class="section-kicker">Trial Detail</p>
+                <h2>Per-Item Scores</h2>
               </div>
             </div>
           <div class="table-wrap">
@@ -161,9 +161,9 @@
                   <th>Stage</th>
                   <th>Item</th>
                   <th>Candidate ID</th>
-                  <th>Total ratings</th>
-                  <th>Average score</th>
-                  <th>Audio attached</th>
+                  <th>Total Ratings</th>
+                  <th>Average Score</th>
+                  <th>Audio Attached</th>
                 </tr>
               </thead>
               <tbody id="trial-stats"></tbody>
